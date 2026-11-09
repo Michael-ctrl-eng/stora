@@ -1,4 +1,9 @@
 @extends('themes.xylo.layouts.master')
+@section('css')
+    @foreach ($banners as $banner)
+        <link rel="preload" as="image" href="{{ Storage::url(optional($banner->translation)->image_url ?? 'default.jpg') }}">
+    @endforeach
+@endsection
 @section('content')
     @php $currency = activeCurrency(); @endphp
     {{-- Banner Section Start --}}
@@ -34,7 +39,7 @@
                         <a href="{{ route('category.show', $category->slug) }}">
                             <h3>{{ $category->translation->name ?? 'No Translation' }}</h3>
                             <div class="catcard-img">
-                                <img src="{{ Storage::url(optional($category->translation)->image_url ?? 'default.jpg') }}" alt="{{ $category->translation->name ?? 'No Translation' }}">
+                                <img src="{{ Storage::url(optional($category->translation)->image_url ?? 'default.jpg') }}" alt="{{ $category->translation->name ?? 'No Translation' }}" loading="lazy" decoding="async">
                             </div>
                         </a>
                     </div>
@@ -53,7 +58,7 @@
                     <div class="product-card">
                         <div class="product-img">
                             <img src="{{ Storage::url(optional($product->thumbnail)->image_url ?? 'default.jpg') }}" 
-                                alt="{{ $product->translation->name ?? 'Product Name Not Available' }}">
+                                alt="{{ $product->translation->name ?? 'Product Name Not Available' }}" loading="lazy" decoding="async">
                                 <button class="wishlist-btn" data-product-id="{{ $product->id }}">
                                     <i class="fa-solid fa-heart"></i>
                                 </button>
@@ -164,7 +169,7 @@
                 <div class="col-md-3">
                     <div class="feature-box text-start">
                         <div class="feature-icon">
-                            <img src="https://i.ibb.co/WNQXhLnP/choose-icon1.png" alt="">
+                            <img src="{{ asset('images/icons/choose-icon1.png') }}" alt="">
                         </div>
                         <h3>{{ __('store.home.fast_delivery_title') }}</h3>
                         <p>{{ __('store.home.fast_delivery_text') }}</p>
@@ -174,7 +179,7 @@
                 <div class="col-md-3">
                     <div class="feature-box text-start">
                         <div class="feature-icon">
-                            <img src="https://i.ibb.co/FkmgGPrr/choose-icon2.png" alt="">
+                            <img src="{{ asset('images/icons/choose-icon2.png') }}" alt="">
                         </div>
                         <h3>{{ __('store.home.customer_support_title') }}</h3>
                         <p>{{ __('store.home.customer_support_text') }}</p>
@@ -184,7 +189,7 @@
                 <div class="col-md-3">
                     <div class="feature-box text-start">
                         <div class="feature-icon">
-                            <img src="https://i.ibb.co/CffNqX9/choose-icon3.png" alt="">
+                            <img src="{{ asset('images/icons/choose-icon3.png') }}" alt="">
                         </div>
                         <h3>{{ __('store.home.trusted_worldwide_title') }}</h3>
                         <p>{{ __('store.home.trusted_worldwide_text') }}</p>
@@ -194,7 +199,7 @@
                 <div class="col-md-3">
                     <div class="feature-box text-start">
                         <div class="feature-icon">
-                            <img src="https://i.ibb.co/XPvjQGG/choose-icon4.png" alt="">
+                            <img src="{{ asset('images/icons/choose-icon4.png') }}" alt="">
                         </div>
                         <h3>{{ __('store.home.ten_years_services_title') }}</h3>
                         <p>{{ __('store.home.ten_years_services_text') }}</p>
@@ -205,39 +210,10 @@
     </section>
 @endsection
 @section('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
+        // Add-to-cart uses the shared, hardened storaApi helper (see master layout)
         function addToCart(productId) {
-
-            fetch("{{ route('cart.add') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    quantity: 1
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                toastr.success("{{ session('success') }}", data.message, {
-                    closeButton: true,
-                    progressBar: true,
-                    positionClass: "toast-top-right",
-                    timeOut: 5000
-                });
-                updateCartCount(data.cart);
-            })
-            .catch(error => console.error("Error:", error));
-        }
-
-        function updateCartCount(cart) {
-            let totalCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-            let badge = document.getElementById("cart-count");
-            badge.textContent = totalCount;
-            badge.classList.toggle('d-none', totalCount === 0);
+            storaApi.addToCart(productId, { quantity: 1 });
         }
 </script>
 
@@ -247,33 +223,20 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const productId = this.getAttribute('data-product-id');
 
-            fetch('/customer/wishlist', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json",
-                },
-                body: JSON.stringify({ product_id: productId })
-            })
-            .then(response => {
-                if (response.status === 401) {
-                    // Not logged in
-                    window.location.href = '/customer/login';
-                } else if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Something went wrong');
-                }
-            })
-            .then(data => {
-                if (data?.message) {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            storaApi.post('/customer/wishlist', { product_id: productId })
+                .then(data => {
+                    storaApi.toast('success', data.message || 'Saved to favorites');
+                })
+                .catch(err => {
+                    if (err.status === 401) {
+                        storaApi.toast('warning', 'Sign in to save items to your wishlist.');
+                    } else if (err.status === 419) {
+                        storaApi.toast('warning', 'Session expired — refreshing…');
+                        setTimeout(function () { window.location.reload(); }, 900);
+                    } else {
+                        storaApi.toast('error', err.message || 'Something went wrong');
+                    }
+                });
         });
     });
 });

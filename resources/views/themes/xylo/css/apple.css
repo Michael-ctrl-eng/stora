@@ -1375,3 +1375,49 @@ footer .bg-black span { color: var(--ap-tertiary); font-size: 12px; }
 
 /* Product card fills its slide height */
 .product-slider .product-card { height: 100%; }
+
+/* ============================================================
+   Product detail — premium gallery (main + synced thumbnails)
+   ============================================================ */
+.pdp-gallery { border-radius: 22px; overflow: hidden; background: #fff; }
+.pdp-gallery .slick-prev,
+.pdp-gallery .slick-next {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.82); color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.08); font-size: 17px; line-height: 1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+    transition: transform .18s ease, background .18s ease; z-index: 5;
+}
+.pdp-gallery .slick-prev:hover,
+.pdp-gallery .slick-next:hover { transform: scale(1.06); background: #fff; }
+.pdp-gallery .slick-prev { left: 14px; }
+.pdp-gallery .slick-next { right: 14px; }
+.pdp-gallery-slide img {
+    border-radius: 22px; background: #fff;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.10);
+}
+.pdp-gallery-thumbs { margin-top: 16px; }
+.pdp-gallery-thumb {
+    padding: 0 6px; opacity: .5; transition: opacity .2s ease; cursor: pointer;
+}
+.pdp-gallery-thumb.slick-current { opacity: 1; }
+.pdp-gallery-thumb img {
+    width: 100%; height: 84px; object-fit: cover;
+    border-radius: 14px; border: 1px solid rgba(0, 0, 0, 0.07); background: #fff;
+}
+.pdp-gallery-thumb.slick-current img { border-color: #0071e3; }
+@media (max-width: 767.98px) {
+    .pdp-gallery-thumb img { height: 64px; }
+}
+
+/* Review list polish */
+.reviewbox { background: #f5f5f7; }
+.product-detail-customer-review ul { list-style: none; padding-left: 0; }
+.product-detail-customer-review li {
+    background: #fff; border-radius: 18px; padding: 22px 24px; margin-bottom: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+.review-customer-info { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.review-rating { margin-bottom: 6px; }
+.review-time { color: #6e6e73; font-size: .85rem; margin-left: 6px; }

@@ -22,7 +22,7 @@
                             <img id="profilePreview"
                                 src="{{ $customer->profile_image 
                                     ? asset('storage/' . $customer->profile_image) 
-                                    : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=0D8ABC&color=fff&size=70' }}"
+                                    : 'data:image/svg+xml,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="65" height="65"><rect width="65" height="65" rx="32.5" fill="#0071e3"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system,Helvetica,Arial" font-size="26" fill="#ffffff">' . strtoupper(substr($customer->name ?? 'S', 0, 1)) . '</text></svg>') }}"
                                 alt="Profile"
                                 class="rounded-circle shadow-sm mb-1"
                                 style="width:65px; height:65px; object-fit:cover; transition:0.3s;">

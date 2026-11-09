@@ -17,7 +17,7 @@
     "env": {
         "APP_NAME": "Stora",
         "APP_ENV": "production",
-        "APP_KEY": "base64:XXNk2la7ErHb/WeT859NUQVk7vMqK9cirDpt1hS6FNA=",
+        "APP_KEY": "base64:vzEWBUWqRUK7wmCft2eWRScCO8K9475yW1i1QEyb1fY=",
         "APP_DEBUG": "false",
 
         "VERCEL_PHP_DOCROOT": "public",

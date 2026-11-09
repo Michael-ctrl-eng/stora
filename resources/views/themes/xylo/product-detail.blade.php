@@ -1,6 +1,5 @@
 @extends('themes.xylo.layouts.master')
 @section('css')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 @endsection
 @section('content')
 @php $currency = activeCurrency(); @endphp
@@ -23,13 +22,22 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 position-relative">
-                <div class="product-slider">
+                <div class="pdp-gallery">
                     @foreach ($product->images as $image)
-                        <div>
-                            <img src="{{ Storage::url($image['image_url']) }}" alt="{{ $image['name'] }}" style="width: 100%; height: auto;" />
+                        <div class="pdp-gallery-slide">
+                            <img src="{{ Storage::url($image['image_url']) }}" alt="{{ $image['name'] }}" style="width: 100%; height: auto;" {{ $loop->first ? '' : 'loading="lazy"' }} decoding="async" />
                         </div>
                     @endforeach
                 </div>
+                @if ($product->images->count() > 1)
+                <div class="pdp-gallery-thumbs">
+                    @foreach ($product->images as $image)
+                        <div class="pdp-gallery-thumb">
+                            <img src="{{ Storage::url($image['image_url']) }}" alt="" loading="lazy" decoding="async" />
+                        </div>
+                    @endforeach
+                </div>
+                @endif
 
             </div>
             <div class="col-md-6 pro-textarea">
@@ -201,14 +209,20 @@
                         @foreach($product->reviews as $review)
                             @if($review->is_approved)
                                 <li>
-                                    <!-- Display Customer's Image -->
+                                    <!-- Display Customer's Image (local initials avatar, no external calls) -->
                                     <div class="review-customer-info">
-                                        <img src="{{ $review->customer->profile_image
-                                                ? asset('storage/' . $review->customer->profile_image)
-                                                : 'https://ui-avatars.com/api/?name=' . urlencode($review->customer->name) . '&background=0D8ABC&color=fff&size=70' }}"
-                                            alt="{{ $review->customer->name }}" 
-                                            class="review-customer-avatar"
-                                            style="width:45px; height:45px; border-radius:50%; object-fit:cover;"/>  
+                                        @php
+                                            $initials = collect(explode(' ', trim($review->customer->name)))
+                                                ->filter()
+                                                ->take(2)
+                                                ->map(fn ($w) => strtoupper(mb_substr($w, 0, 1)))
+                                                ->implode('');
+                                            $avatarPalette = ['#0071e3', '#28c840', '#af52de', '#ff9f0a', '#5856d6', '#ff375f'];
+                                            $avatarColor = $avatarPalette[$review->customer_id % count($avatarPalette)];
+                                        @endphp
+                                        <span class="review-customer-avatar d-inline-flex align-items-center justify-content-center fw-semibold"
+                                            style="width:45px; height:45px; border-radius:50%; background: {{ $avatarColor }}; color:#fff; font-size:15px;"
+                                            aria-hidden="true">{{ $initials }}</span>
                                         <strong>{{ ucwords($review->customer->name) }}</strong>
                                     </div>
 
@@ -335,29 +349,47 @@
     });
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>  
     <script>
     @if(Session::has('success'))
-        toastr.success("{{ session('success') }}");
+        document.addEventListener('DOMContentLoaded', function () { storaApi.toast('success', "{{ session('success') }}"); });
     @endif
 
     @if(Session::has('error'))
-        toastr.error("{{ session('error') }}");
+        document.addEventListener('DOMContentLoaded', function () { storaApi.toast('error', "{{ session('error') }}"); });
     @endif
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>  
     <script>
         $(document).ready(function() {
-            $('.product-slider').slick({
-                arrows: true,
-                dots: false,
-                infinite: true,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                prevArrow: '<button type="button" class="slick-prev">←</button>',
-                nextArrow: '<button type="button" class="slick-next">→</button>',
-            });
+            var $gallery = $('.pdp-gallery');
+            if ($gallery.length) {
+                $gallery.slick({
+                    arrows: true,
+                    dots: false,
+                    infinite: true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    fade: true,
+                    speed: 260,
+                    prevArrow: '<button type="button" class="slick-prev" aria-label="Previous image">←</button>',
+                    nextArrow: '<button type="button" class="slick-next" aria-label="Next image">→</button>',
+                    asNavFor: $('.pdp-gallery-thumbs').length ? '.pdp-gallery-thumbs' : null,
+                });
+                var $thumbs = $('.pdp-gallery-thumbs');
+                if ($thumbs.length) {
+                    $thumbs.slick({
+                        slidesToShow: Math.min(4, $thumbs.children().length),
+                        slidesToScroll: 1,
+                        focusOnSelect: true,
+                        arrows: false,
+                        dots: false,
+                        infinite: true,
+                        centerMode: true,
+                        centerPadding: '6px',
+                        asNavFor: '.pdp-gallery',
+                    });
+                }
+            }
         });
     </script>
 
@@ -442,7 +474,7 @@
         }
 
         function addToCart(productId, product_type) {
-            const quantity = parseInt(document.getElementById("qty").value);
+            const quantity = parseInt(document.getElementById("qty").value) || 1;
             const attributeInputs = document.querySelectorAll('#product-attributes input[type="radio"]:checked');
 
             let selectedAttributes = [];
@@ -450,25 +482,10 @@
                 selectedAttributes.push(parseInt(input.value));
             });
 
-            fetch("{{ route('cart.add') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    quantity: quantity,
-                    attribute_value_ids: selectedAttributes,
-                    product_type: product_type
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                toastr.success(data.message);
-                updateCartCount(data.cart);
-            })
-            .catch(error => console.error("Error:", error));
+            storaApi.addToCart(productId, {
+                quantity: quantity,
+                attribute_value_ids: selectedAttributes
+            });
         }
 
 
@@ -479,11 +496,10 @@
             return null; // For now, assuming no variant is selected directly
         }
 
+        // legacy helper kept for compatibility — badge updates now come from the server cart_count
         function updateCartCount(cart) {
             let totalCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-            let badge = document.getElementById("cart-count");
-            badge.textContent = totalCount;
-            badge.classList.toggle('d-none', totalCount === 0);
+            storaApi.updateCartBadge(totalCount);
         }
     </script>
 @endsection

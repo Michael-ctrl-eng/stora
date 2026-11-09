@@ -1,6 +1,5 @@
 @extends('themes.xylo.layouts.master')
 @section('css')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"> 
 @endsection
 @section('content')
     @php $currency = activeCurrency(); @endphp
@@ -71,7 +70,6 @@
 @endsection
 
 @section('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
     const minSlider = document.getElementById('minPrice');
@@ -142,36 +140,7 @@
 
 <script>
 function addToCart(productId) {
-
-    fetch("{{ route('cart.add') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: 1
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        toastr.success("{{ session('success') }}", data.message, {
-            closeButton: true,
-            progressBar: true,
-            positionClass: "toast-top-right",
-            timeOut: 5000
-        });
-        updateCartCount(data.cart);
-    })
-    .catch(error => console.error("Error:", error));
-}
-
-function updateCartCount(cart) {
-    let totalCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-    let badge = document.getElementById("cart-count");
-    badge.textContent = totalCount;
-    badge.classList.toggle('d-none', totalCount === 0);
+    storaApi.addToCart(productId, { quantity: 1 });
 }
 </script>
 @endsection

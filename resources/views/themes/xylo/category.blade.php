@@ -95,30 +95,7 @@
 <script>
     // Add to Cart
     function addToCart(productId) {
-        fetch("{{ route('cart.add') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: 1
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            toastr.success(data.message || "Added to cart successfully!");
-            updateCartCount(data.cart);
-        })
-        .catch(error => console.error("Error:", error));
-    }
-
-    function updateCartCount(cart) {
-        let totalCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-        let badge = document.getElementById("cart-count");
-        badge.textContent = totalCount;
-        badge.classList.toggle('d-none', totalCount === 0);
+        storaApi.addToCart(productId, { quantity: 1 });
     }
 
     // Wishlist

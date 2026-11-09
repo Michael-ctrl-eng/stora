@@ -1,6 +1,5 @@
 @extends('themes.xylo.layouts.master')
 @section('css')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"> 
 @endsection
 @section('content')
     @php $currency = activeCurrency(); @endphp
@@ -189,7 +188,6 @@
 @endsection
 
 @section('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     $(document).ready(function() {
         $('.update-cart').click(function(e) {
@@ -207,45 +205,27 @@
                 });
             });
 
-            $.ajax({
-                url: "{{ route('cart.update') }}",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    cart: cartData
-                },
-                success: function(response) {
+            storaApi.post('/cart/update', { cart: cartData })
+                .then(function (response) {
                     if (response.success) {
                         location.reload();
+                    } else {
+                        storaApi.toast('error', response.message || 'Could not update the cart.');
                     }
-                }
-            });
+                });
         });
     });
 
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.remove-from-cart').forEach(button => {
             button.addEventListener('click', function() {
-                let productId = this.dataset.id;
+                let itemKey = this.dataset.id;
 
-                fetch("{{ route('cart.remove') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({ product_id: productId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    toastr.success("{{ session('success') }}", data.message, {
-                        closeButton: true,
-                        progressBar: true,
-                        positionClass: "toast-top-right",
-                        timeOut: 5000
+                storaApi.post('/cart/remove', { product_id: itemKey })
+                    .then(function (data) {
+                        storaApi.toast('success', data.message || 'Removed');
+                        location.reload();
                     });
-                    location.reload();
-                });
             });
         });
     });
@@ -256,22 +236,9 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("applyCouponForm")?.addEventListener("submit", function(e) {
         e.preventDefault();
         let code = document.getElementById("coupon_code").value;
-        fetch("{{ route('cart.applyCoupon') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-            },
-            body: JSON.stringify({ code: code })
-        })
-        .then(response => response.json())
+        storaApi.post('/cart/apply-coupon', { code: code })
         .then(data => {
-            toastr.success(data.message, "Applied", {
-                closeButton: true,
-                progressBar: true,
-                positionClass: "toast-top-right",
-                timeOut: 5000
-            });
+            storaApi.toast(data.success ? 'success' : 'warning', data.message || 'Coupon applied');
             setTimeout(() => {
                 if (data.success) location.reload();
             }, 1000);
@@ -280,21 +247,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById("removeCouponForm")?.addEventListener("submit", function(e) {
         e.preventDefault();
-        fetch("{{ route('cart.removeCoupon') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-            }
-        })
-        .then(response => response.json())
+        storaApi.post('/cart/remove-coupon', {})
         .then(data => {
-            toastr.success(data.message, "Removed", {
-                closeButton: true,
-                progressBar: true,
-                positionClass: "toast-top-right",
-                timeOut: 5000
-            });
+            storaApi.toast(data.success ? 'success' : 'warning', data.message || 'Coupon removed');
             
             setTimeout(() => {
                 if (data.success) location.reload();

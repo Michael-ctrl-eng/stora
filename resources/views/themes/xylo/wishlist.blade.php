@@ -85,25 +85,7 @@ $(document).on('click', '.wishlist-btn', function () {
 });
 //  Add to Cart
 function addToCart(productId) {
-    $.ajax({
-        url: "{{ route('cart.add') }}",
-        method: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            product_id: productId,
-            quantity: 1
-        },
-        success: function(res) {
-            if (res.status === 'success') {
-                toastr.success(res.message);
-            } else {
-                toastr.success(res.message);
-            }
-        },
-        error: function() {
-            toastr.error("Error adding to cart");
-        }
-    });
+    storaApi.addToCart(productId, { quantity: 1 });
 }
 </script>
 @endsection

@@ -1,6 +1,5 @@
 @extends('themes.xylo.layouts.master')
 @section('css')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"> 
 @endsection
 @section('content')
     @php $currency = activeCurrency(); @endphp
@@ -150,71 +149,7 @@
 @endsection
 
 @section('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<?php /* ?>
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-    // Fetch keys from backend
-    let response = await fetch("{{ route('stripe.checkout.process') }}");
-    let data = await response.json();
-
-    let stripe = Stripe(data.publicKey);
-    let elements = stripe.elements();
-    let cardElement = elements.create('card');
-    cardElement.mount('#card-element');
-
-    document.querySelector('#checkout-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const {error, paymentIntent} = await stripe.confirmCardPayment(data.clientSecret, {
-            payment_method: {
-                card: cardElement
-            }
-        });
-
-        if (error) {
-            alert(error.message);
-        } else if (paymentIntent.status === 'succeeded') {
-            alert("Payment successful!");
-            window.location.href = "/order/success";
-        }
-    });
-});
-</script>
-
-
-@if($paypalClientId)
-    <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=USD"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (typeof paypal !== "undefined") {
-                paypal.Buttons({
-                    createOrder: function(data, actions) {
-                        return actions.order.create({
-                            purchase_units: [{ amount: { value: "{{ $total }}" } }]
-                        });
-                    },
-                    onApprove: function(data, actions) {
-                        return actions.order.capture().then(function(details) {
-                            fetch("{{ route('checkout.process') }}", {
-                                method: "POST",
-                                headers: {"X-CSRF-TOKEN": "{{ csrf_token() }}"},
-                                body: JSON.stringify({
-                                    gateway: "paypal",
-                                    order_id: data.orderID
-                                })
-                            });
-                        });
-                    }
-                }).render('#paypal-button-container');
-            } else {
-                console.error("PayPal SDK not loaded");
-            }
-        });
-    </script>
-@endif
-<?php */ ?>
+<?php /* legacy Stripe/PayPal wiring kept for reference in git history */ ?>
 @php
     $paypalReady = $paypalClientId && !str_starts_with($paypalClientId, 'your-');
     $stripeReady = $stripePublicKey && str_starts_with($stripePublicKey, 'pk_');
@@ -222,7 +157,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 @if($paypalReady)
     <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=USD"></script>
 @endif
-<script src="https://js.stripe.com/v3/"></script>
+@if($stripeReady)
+    <script src="https://js.stripe.com/v3/"></script>
+@endif
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const gatewayRadios = document.querySelectorAll('input[name="gateway"]');
@@ -230,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const stripeContainer = document.getElementById("card-element");
     const stripeErrors = document.getElementById("card-errors");
     const form = document.getElementById("checkout-form");
-    const processUrl = "{{ route('checkout.process') }}";
+    const processUrl = "/checkout/process";
     const csrfToken = "{{ csrf_token() }}";
 
     const PAYPAL_READY = {{ $paypalReady ? 'true' : 'false' }};

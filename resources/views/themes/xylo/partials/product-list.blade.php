@@ -4,7 +4,7 @@
     <div class="product-card">
         <div class="product-img">
             <img src="{{ Storage::url(optional($product->thumbnail)->image_url ?? 'default.jpg') }}" 
-                 alt="{{ $product->translation->title ?? 'Product Name Not Available' }}">
+                 alt="{{ $product->translation->title ?? 'Product Name Not Available' }}" loading="lazy" decoding="async">
             <button class="wishlist-btn"><i class="fa-solid fa-heart"></i></button>
         </div>
         <div class="product-info mt-4">

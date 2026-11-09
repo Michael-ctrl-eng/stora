@@ -47,13 +47,11 @@ if (is_file($bundledDb) && !is_file($runtimeDb)) {
 // ---------------------------------------------------------------------------
 // 3. Runtime environment
 // ---------------------------------------------------------------------------
-// Let Laravel generate absolute URLs against the live deployment domain.
-if (empty($_ENV['APP_URL']) && !empty($_ENV['VERCEL_URL'])) {
-    $appUrl = 'https://' . $_ENV['VERCEL_URL'];
-    $_ENV['APP_URL'] = $appUrl;
-    $_SERVER['APP_URL'] = $appUrl;
-    putenv('APP_URL=' . $appUrl);
-}
+// NOTE: APP_URL is intentionally NOT forced from VERCEL_URL. Forcing it made
+// every route()/asset() URL point at the per-deployment domain while visitors
+// browse the production alias — turning same-origin fetches (add to cart,
+// checkout, CSRF) into broken cross-origin requests. Laravel derives correct
+// same-origin URLs from the incoming request host on its own.
 
 // ---------------------------------------------------------------------------
 // 4. Serve static assets directly from the document root (public/)
@@ -69,6 +67,12 @@ if ($uri !== '/' && $uri !== '/api/index.php') {
         && str_starts_with($file, $publicRoot . DIRECTORY_SEPARATOR)) {
         return false;
     }
+}
+
+// Direct requests for the serverless entrypoint itself are not a page.
+if ($uri === '/api/index.php') {
+    http_response_code(404);
+    exit('Not Found');
 }
 
 // ---------------------------------------------------------------------------

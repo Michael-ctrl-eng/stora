@@ -8,19 +8,18 @@
     @if (!App::environment('testing'))
         @vite(['resources/views/themes/xylo/sass/app.scss'])
     @endif
-    {{-- Inter : metric-compatible stand-in for SF Pro on non-Apple devices --}}
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- Self-hosted Inter font (no external origins) --}}
+    <link rel="preload" href="{{ asset('vendor/fonts/inter-var-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ asset('vendor/css/inter.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/css/bootstrap.min.css') }}">
         @if (!App::environment('testing'))
             @vite(['resources/views/themes/xylo/css/animate.min.css'])
         @endif
         @if (!App::environment('testing'))
             @vite(['resources/views/themes/xylo/css/slick.css'])
         @endif
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+        <link rel="stylesheet" href="{{ asset('vendor/css/slick-theme.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/css/all.min.css') }}" />
         @if (!App::environment('testing'))
             @vite(['resources/views/themes/xylo/css/style.css'])
         @endif
@@ -38,8 +37,8 @@
     @if (!App::environment('testing'))
         @vite(['resources/views/themes/xylo/js/app.js'])
     @endif
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('vendor/js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/bootstrap.bundle.min.js') }}"></script>
     @yield('js')
  
 </body>
