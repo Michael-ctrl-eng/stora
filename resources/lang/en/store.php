@@ -184,7 +184,18 @@ return [
         'order_failed' => 'Something went wrong. Please try again.',
         'payment_required' => 'Please select a payment method before continuing.',
         'paypal_instructions' => 'Please complete payment using the PayPal button.',
+        'cart_empty' => 'Your cart is empty.',
+        'payment_not_completed' => 'Payment was not completed. Please try again.',
+        'gateway_unsupported' => 'Payment method ":gateway" is not available yet. Please choose another method.',
+        'gateway_not_configured' => 'This payment method is not configured yet. Add your API keys in the admin panel to enable it.',
 
+    ],
+
+    'thank_you' => [
+        'title' => 'Thank you for your order',
+        'message' => 'Your payment was successful and your order has been received. We are getting it ready right away.',
+        'email_note' => 'A confirmation email with your order details is on its way.',
+        'continue_shopping' => 'Continue shopping',
     ],
 
     'profile' => [

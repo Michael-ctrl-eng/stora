@@ -21,9 +21,9 @@ class StripeService
         $gateway = PaymentGateway::where('code', 'stripe')->first();
 
         // Fetch keys from the gateway configs
-        $secretKey = $gateway ? $gateway->getConfigValue('secret', $environment) : null;
+        $secretKey = $gateway ? $gateway->getConfigValue('secret_key') : null;
 
-        $this->publicKey = $gateway ? $gateway->getConfigValue('public', $environment) : null;
+        $this->publicKey = $gateway ? $gateway->getConfigValue('public_key') : null;
 
         if (! $secretKey) {
             throw new \Exception('Stripe secret key not found!');
@@ -43,6 +43,16 @@ class StripeService
         return $this->client->paymentIntents->create([
             'amount' => $amount,
             'currency' => $currency,
+        ]);
+    }
+
+    /**
+     * Confirm a PaymentIntent with a client-side created payment method.
+     */
+    public function confirmPaymentIntent(string $intentId, string $paymentMethodId)
+    {
+        return $this->client->paymentIntents->confirm($intentId, [
+            'payment_method' => $paymentMethodId,
         ]);
     }
 }

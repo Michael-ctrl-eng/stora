@@ -9,34 +9,22 @@ class Order extends Model
 {
     use HasFactory;
 
-    // Define the table associated with the model
+    /**
+     * The database table associated with the model.
+     */
     protected $table = 'orders';
 
-    // Define the fields that can be mass-assigned
+    /**
+     * Fields that can be mass-assigned.
+     * Mirrors the orders table columns.
+     */
     protected $fillable = [
-        'order_date',
+        'vendor_id',
+        'customer_id',
+        'guest_email',
+        'total_amount',
         'status',
-        'total_price',
-        'shipping_address',
-        'billing_address',
-        'payment_method',
-        'payment_status',
-        'shipping_method',
-        'tracking_number',
-        'product_id',
-        'quantity',
-        'unit_price',
-        'discount_amount',
-        'coupon_code',
-        'created_at',
-        'updated_at',
     ];
-
-    // Define the relationship with the Product model (assuming you have a Product model)
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
 
     public function details()
     {
@@ -46,5 +34,20 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function shippingAddress()
+    {
+        return $this->hasOne(ShippingAddress::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }

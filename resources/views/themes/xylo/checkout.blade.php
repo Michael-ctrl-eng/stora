@@ -215,19 +215,69 @@ document.addEventListener("DOMContentLoaded", async () => {
     </script>
 @endif
 <?php */ ?>
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=USD"></script>
+@php
+    $paypalReady = $paypalClientId && !str_starts_with($paypalClientId, 'your-');
+    $stripeReady = $stripePublicKey && str_starts_with($stripePublicKey, 'pk_');
+@endphp
+@if($paypalReady)
+    <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=USD"></script>
+@endif
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const gatewayRadios = document.querySelectorAll('input[name="gateway"]');
     const paypalContainer = document.getElementById("paypal-button-container");
     const stripeContainer = document.getElementById("card-element");
-    const placeOrderBtn = document.getElementById("place-order");
+    const stripeErrors = document.getElementById("card-errors");
+    const form = document.getElementById("checkout-form");
+    const processUrl = "{{ route('checkout.process') }}";
+    const csrfToken = "{{ csrf_token() }}";
 
-    let stripe = Stripe("asdasd");
-    let elements = stripe.elements();
-    let card = elements.create("card");
-    card.mount("#card-element");
+    const PAYPAL_READY = {{ $paypalReady ? 'true' : 'false' }};
+    const STRIPE_READY = {{ $stripeReady ? 'true' : 'false' }};
+    const MSG = {
+        notConfigured: "{{ __('store.checkout.gateway_not_configured') }}",
+        paypalInstructions: "{{ __('store.checkout.paypal_instructions') }}",
+        orderFailed: "{{ __('store.checkout.order_failed') }}"
+    };
+
+    let stripe = null;
+    let card = null;
+
+    if (STRIPE_READY) {
+        stripe = Stripe("{{ $stripePublicKey }}");
+        card = stripe.elements().create("card");
+        card.mount("#card-element");
+        card.on("change", function (event) {
+            if (event.error) {
+                stripeErrors.textContent = event.error.message;
+            } else {
+                stripeErrors.textContent = "";
+            }
+        });
+    }
+
+    function handleResult(result) {
+        if (result && result.success) {
+            window.location.href = result.redirect || "/thank-you";
+        } else {
+            toastr.error((result && result.message) ? result.message : MSG.orderFailed);
+        }
+    }
+
+    function postForm(formData) {
+        fetch(processUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+        .then(res => res.json().then(data => ({ status: res.status, body: data })))
+        .then(({ body }) => handleResult(body))
+        .catch(() => toastr.error(MSG.orderFailed));
+    }
 
     // Show correct payment fields
     gatewayRadios.forEach(radio => {
@@ -235,18 +285,26 @@ document.addEventListener("DOMContentLoaded", function () {
             if (this.value === "paypal") {
                 paypalContainer.style.display = "block";
                 stripeContainer.style.display = "none";
+                stripeErrors.style.display = "none";
+                if (!PAYPAL_READY) {
+                    stripeErrors.textContent = MSG.notConfigured;
+                    stripeErrors.style.display = "block";
+                }
             } else if (this.value === "stripe") {
                 stripeContainer.style.display = "block";
                 paypalContainer.style.display = "none";
+                stripeErrors.style.display = "block";
+                stripeErrors.textContent = STRIPE_READY ? "" : MSG.notConfigured;
             } else {
                 paypalContainer.style.display = "none";
                 stripeContainer.style.display = "none";
+                stripeErrors.style.display = "none";
             }
         });
     });
 
-    // PayPal integration
-    if (typeof paypal !== "undefined") {
+    // PayPal buttons (rendered only when the SDK loaded with a valid client id)
+    if (typeof paypal !== "undefined" && PAYPAL_READY) {
         paypal.Buttons({
             createOrder: function (data, actions) {
                 return actions.order.create({
@@ -255,58 +313,47 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             onApprove: function (data, actions) {
                 return actions.order.capture().then(function (details) {
-                    // Send to backend
-                    fetch("{{ route('checkout.process') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            gateway: "paypal",
-                            order_id: data.orderID,
-                            details: details
-                        })
-                    }).then(res => res.json()).then(result => {
-                        window.location.href = "/thank-you";
-                    });
+                    let formData = new FormData(form);
+                    formData.append("gateway", "paypal");
+                    formData.append("order_id", data.orderID);
+                    formData.append("details", JSON.stringify(details));
+                    postForm(formData);
                 });
             }
         }).render("#paypal-button-container");
     }
 
-    // Stripe integration
-    const form = document.getElementById("checkout-form");
-    form.addEventListener("submit", async function (e) {
+    // Place order
+    form.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        let selectedGateway = document.querySelector('input[name="gateway"]:checked').value;
+        let selectedGateway = document.querySelector('input[name="gateway"]:checked');
+        if (!selectedGateway) {
+            toastr.error(MSG.orderFailed);
+            return;
+        }
+        selectedGateway = selectedGateway.value;
 
-        if (selectedGateway === "stripe") {
-            const {paymentMethod, error} = await stripe.createPaymentMethod({
-                type: "card",
-                card: card,
+        if (selectedGateway === "stripe" && STRIPE_READY) {
+            stripe.createPaymentMethod({ type: "card", card: card }).then(function (result) {
+                if (result.error) {
+                    stripeErrors.textContent = result.error.message;
+                } else {
+                    let formData = new FormData(form);
+                    formData.append("payment_method_id", result.paymentMethod.id);
+                    postForm(formData);
+                }
             });
-
-            if (error) {
-                document.getElementById("card-errors").textContent = error.message;
-            } else {
-                // Send paymentMethod.id + form data to backend
-                let formData = new FormData(form);
-                formData.append("payment_method_id", paymentMethod.id);
-
-                fetch("{{ route('checkout.process') }}", {
-                    method: "POST",
-                    headers: {"X-CSRF-TOKEN": "{{ csrf_token() }}"},
-                    body: formData
-                }).then(res => res.json()).then(result => {
-                    window.location.href = "/thank-you";
-                });
-            }
         } else if (selectedGateway === "paypal") {
-            alert("Please complete payment with PayPal button");
+            if (PAYPAL_READY && typeof paypal !== "undefined") {
+                toastr.info(MSG.paypalInstructions);
+            } else {
+                toastr.error(MSG.notConfigured);
+            }
+        } else if (selectedGateway === "stripe") {
+            toastr.error(MSG.notConfigured);
         } else {
-            form.submit();
+            postForm(new FormData(form));
         }
     });
 });

@@ -41,7 +41,12 @@ Route::get('/search', [SearchController::class, 'searchResults']);
 Route::get('/get-variant-price', [ProductController::class, 'getVariantPrice'])->name('product.variant.price');
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/thank-you', [CheckoutController::class, 'thankYou'])->name('checkout.thank-you');
+// PayPal success callback
+Route::get('/checkout/paypal/success', [CheckoutController::class, 'paypalSuccess'])->name('paypal.success');
+// PayPal cancel callback
+Route::get('/checkout/paypal/cancel', [CheckoutController::class, 'paypalCancel'])->name('paypal.cancel');
 
 // Category page
 Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
@@ -69,7 +74,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::middleware('auth.customer')->group(function () {
         Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
         Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-        Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+        Route::post('/wishlist', [WishlistController::class, 'toggle'])->name('wishlist.store');
         Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 
         //  Customer Profile Routes

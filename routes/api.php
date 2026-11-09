@@ -35,7 +35,7 @@ Route::prefix('customer')->group(function () {
 });
 
 Route::get('/banners', [BannerController::class, 'index']);
-Route::apiResource('brands', BrandController::class);
+Route::apiResource('brands', BrandController::class)->only(['index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/social-media-links', [SocialMediaLinkController::class, 'index']);

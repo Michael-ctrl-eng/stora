@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\PaymentGatewayConfigController;
 use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductReviewController;
@@ -54,7 +53,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/admin/categories/update-status', [CategoryController::class, 'updateCategoryStatus'])->name('categories.updateStatus');
 
     /* Products */
-    Route::resource('products', ProductController::class);
+    Route::resource('products', ProductController::class)->except(['show']);
     Route::post('products/data', [ProductController::class, 'getProducts'])->name('products.data');
     Route::post('admin/products/updateStatus', [ProductController::class, 'updateStatus'])->name('products.updateStatus');
 
@@ -72,20 +71,20 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/change-language', [LanguageController::class, 'changeLanguage'])->name('change.language');
 
     /* Menus */
-    Route::resource('menus', MenuController::class);
+    Route::resource('menus', MenuController::class)->except(['show']);
     Route::post('menus/data', [MenuController::class, 'getData'])->name('menus.data');
-    Route::resource('menus.items', MenuItemController::class)->shallow();
+    Route::resource('menus.items', MenuItemController::class)->shallow()->except(['show']);
     Route::get('menus-items', [MenuItemController::class, 'index'])->name('menus.item.index');
     Route::post('menus-items/getdata', [MenuItemController::class, 'getData'])->name('menus.item.getData');
 
     /* Banners */
-    Route::resource('banners', BannerController::class);
+    Route::resource('banners', BannerController::class)->except(['show']);
     Route::post('banners/data', [BannerController::class, 'getData'])->name('banners.data');
     Route::put('/banners/toggle-status/{id}', [BannerController::class, 'toggleStatus'])->name('banners.toggleStatus');
     Route::post('/banners/update-status', [BannerController::class, 'updateStatus'])->name('banners.updateStatus');
 
     /* Social Media Links */
-    Route::resource('social-media-links', SocialMediaLinkController::class);
+    Route::resource('social-media-links', SocialMediaLinkController::class)->except(['show']);
     Route::post('social-media-links/data', [SocialMediaLinkController::class, 'getData'])->name('social-media-links.data');
 
     /* Orders */
@@ -94,11 +93,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('orders/data', [OrderController::class, 'getData'])->name('orders.data');
 
     /* Product Variants */
-    Route::resource('product_variants', ProductVariantController::class);
+    Route::resource('product_variants', ProductVariantController::class)->except(['show']);
     Route::post('/product_variants/data', [ProductVariantController::class, 'getData'])->name('product_variants.data');
 
     /* Customers */
-    Route::resource('customers', CustomerController::class);
+    Route::resource('customers', CustomerController::class)->except(['show']);
     Route::get('admin/customers/data', [CustomerController::class, 'getCustomerData'])->name('customers.data');
 
     /* Reviews */
@@ -106,16 +105,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('reviews', ProductReviewController::class)->except(['create', 'store']);
 
     /* Attributes */
-    Route::resource('attributes', AttributeController::class);
-
-    /* Attribute Value Management */
-    Route::post('attributes/{attribute}/values', [AttributeController::class, 'storeValue'])->name('attributes.values.store');
-    Route::delete('values/{value}', [AttributeController::class, 'destroyValue'])->name('values.destroy');
+    Route::resource('attributes', AttributeController::class)->except(['show']);
     Route::post('attributes/data', [AttributeController::class, 'getAttributesData'])->name('attributes.data');
-
-    /* Attribute Value Translations Management */
-    Route::post('values/{value}/translations', [AttributeController::class, 'storeTranslation'])->name('values.translations.store');
-    Route::delete('translations/{translation}', [AttributeController::class, 'destroyTranslation'])->name('translations.destroy');
 
     /* Vendors */
     Route::get('vendors', [VendorController::class, 'index'])->name('vendors.index');
@@ -125,7 +116,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('vendors', [VendorController::class, 'store'])->name('vendors.store');
 
     /* Pages */
-    Route::resource('pages', PageController::class);
+    Route::resource('pages', PageController::class)->except(['show']);
     Route::post('pages/update-status', [PageController::class, 'updatePageStatus'])->name('pages.updateStatus');
     Route::post('pages/data', [PageController::class, 'data'])->name('pages.data');
 
@@ -146,24 +137,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::put('payment-gateways/{paymentGateway}', [PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
     Route::delete('payment-gateways/{paymentGateway}', [PaymentGatewayController::class, 'destroy'])->name('payment-gateways.destroy');
 
-    /* Payment Gateways Configs */
-    Route::get('payment_gateway_configs/getData', [PaymentGatewayConfigController::class, 'getData'])->name('payment_gateway_configs.getData');
-    Route::resource('payment_gateway_configs', PaymentGatewayConfigController::class)->except(['show']);
-
     /* Profile */
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('site-settings', [SiteSettingsController::class, 'index'])->name('site-settings.index');
-Route::get('site-settings/edit', [SiteSettingsController::class, 'edit'])->name('admin.site-settings.edit');
-Route::put('site-settings/update', [SiteSettingsController::class, 'update'])->name('admin.site-settings.update');
-
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-// PayPal success callback
-Route::get('/checkout/paypal/success', [CheckoutController::class, 'paypalSuccess'])
-    ->name('paypal.success');
-// PayPal cancel callback
-Route::get('/checkout/paypal/cancel', [CheckoutController::class, 'paypalCancel'])
-    ->name('paypal.cancel');
+/* Site Settings — admin only, kept outside the admin prefix group so the
+   route names used across the admin views stay unchanged. */
+Route::middleware('auth')->group(function () {
+    Route::get('site-settings', [SiteSettingsController::class, 'index'])->name('site-settings.index');
+    Route::get('site-settings/edit', [SiteSettingsController::class, 'edit'])->name('admin.site-settings.edit');
+    Route::put('site-settings/update', [SiteSettingsController::class, 'update'])->name('admin.site-settings.update');
+});

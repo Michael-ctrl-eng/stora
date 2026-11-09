@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Shop;
 use App\Models\StoreSetting;
+use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +30,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ---------- Demo storefront (Stora) ----------
+        // Demo admin account for the admin panel (change in production!).
+        User::firstOrCreate(
+            ['email' => 'admin@stora.store'],
+            [
+                'name' => 'Stora Admin',
+                'password' => Hash::make('stora123'),
+            ]
+        );
+
         $vendor = Vendor::firstOrCreate(
             ['email' => 'seller@example.com'],
             [

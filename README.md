@@ -88,6 +88,19 @@ All required environment variables (including `APP_KEY`, SQLite path, cookie ses
 setup**. Just import the repository at [vercel.com/new](https://vercel.com/new) and press
 Deploy.
 
+> `vercel.json` pins `"framework": null` so Vercel never applies the Vite preset
+> (which expects a `dist/` output). The compiled assets already live in
+> `public/build` and the PHP runtime installs Composer dependencies itself.
+
+### Demo accounts
+
+| Panel | URL | Email | Password |
+| --- | --- | --- | --- |
+| Admin | `/login` | `admin@stora.store` | `stora123` |
+| Seller | `/vendor/login` | `seller@example.com` | `abc123` |
+
+> Change these before going live — they are demo credentials for the seeded catalog.
+
 > Vercel Hobby bandwidth applies; static assets are served through the PHP function.
 
 ## Local Development
