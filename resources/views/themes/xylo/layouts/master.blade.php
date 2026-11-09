@@ -53,6 +53,7 @@
     @endif
     @yield('css')
     <link rel="stylesheet" href="{{ asset('vendor/css/toastr.min.css') }}">
+    <script>document.documentElement.classList.add('has-js');</script>
 </head>
 <body class="apple-theme">
     @include('themes.xylo.layouts.header')
@@ -344,6 +345,28 @@
         });
 
 
+    </script>
+    <script>
+        /* Image reveal: fade images in as they finish loading (product cards,
+           category tiles, banner). Capture-phase delegation also covers images
+           added later (e.g. slick carousel clones). */
+        (function () {
+            var reveal = function (img) { img.classList.add('is-loaded'); };
+            document.addEventListener('load', function (e) {
+                if (e.target && e.target.tagName === 'IMG') reveal(e.target);
+            }, true);
+            document.addEventListener('error', function (e) {
+                if (e.target && e.target.tagName === 'IMG') reveal(e.target);
+            }, true);
+            var pass = function () {
+                document.querySelectorAll('img').forEach(function (img) {
+                    if (img.complete && img.naturalWidth > 0) reveal(img);
+                });
+            };
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', pass);
+            } else { pass(); }
+        })();
     </script>
 </body>
 </html>

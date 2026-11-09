@@ -574,13 +574,36 @@ section { scroll-margin-top: 64px; }
 .product-img {
     border-radius: var(--ap-radius-card) var(--ap-radius-card) 0 0;
     background: var(--ap-canvas-alt);
-    height: 280px;
+    /* One uniform square frame for every card — equal card heights,
+       and space is reserved before the image arrives (no layout shift). */
+    aspect-ratio: 1 / 1;
+    height: auto;
+    width: 100%;
+    overflow: hidden;
 }
 .product-img img {
-    max-height: 100%;
+    /* Fill the frame edge-to-edge — no letterboxing, no empty edges. */
+    width: 100%;
+    height: 100%;
+    max-width: none;   /* neutralize base theme width:auto / max-width */
+    max-height: none;  /* neutralize the old contain-style sizing */
+    object-fit: cover;
+    object-position: center;
     transition: transform 0.5s var(--ap-ease);
 }
 .product-img:hover img { transform: scale(1.03); }
+
+/* Fade images in once they actually load (progressive enhancement —
+   only active when JS marks the document, so no-JS never hides images). */
+.has-js .product-img img,
+.has-js .catcard-img img,
+.has-js .rightimg-banner img {
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.5s var(--ap-ease);
+}
+.has-js .product-img img.is-loaded,
+.has-js .catcard-img img.is-loaded,
+.has-js .rightimg-banner img.is-loaded { opacity: 1; }
 
 .wishlist-btn {
     background: rgba(255, 255, 255, 0.85);
@@ -609,6 +632,13 @@ section { scroll-margin-top: 64px; }
     font-weight: 500;
     letter-spacing: -0.014em;
     line-height: 1.3;
+    /* Clamp to two lines and always reserve two lines so every card
+       in a row has the same height regardless of title length. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.6em;
 }
 .product-title,
 .left h3 a {
@@ -1309,7 +1339,8 @@ footer .bg-black span { color: var(--ap-tertiary); font-size: 12px; }
     .banner-area h1 { font-size: 34px; }
     .banner-area p { font-size: 17px; }
     .banner-area .btn-primary, .read-more { width: auto; }
-    .product-img { height: 220px; }
+    /* .product-img no longer needs a mobile height override — the
+       aspect-ratio frame scales with the card width at every size. */
     .cart-box, .coupon-box, .shipping_info, .sidebar { padding: 18px; }
     .apple-auth-card { padding: 32px 22px; border-radius: 22px; }
     .reviewbox { border-radius: 18px; }
