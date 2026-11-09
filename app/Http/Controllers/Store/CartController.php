@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use App\Services\Store\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class CartController extends Controller
 {
@@ -69,10 +70,22 @@ class CartController extends Controller
         Session::put('cart', $cart);
         Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
 
+        // Data for the Apple-style "Added to Bag" panel on the client.
+        $item = $cart[$key];
+        $currency = activeCurrency();
+        $added = [
+            'name' => $product->translation->name,
+            'image' => $item['image'] ? Storage::disk('public')->url($item['image']) : null,
+            'price' => $currency->symbol . number_format((float) $item['price'], 2),
+            'quantity' => $item['quantity'],
+            'in_stock' => $variant->stock > 0,
+        ];
+
         return response()->json([
             'message' => __('store.product_detail.cart_success'),
             'cart' => $cart,
             'cart_count' => Session::get('cart_count'),
+            'added' => $added,
         ]);
     }
 

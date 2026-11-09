@@ -44,8 +44,8 @@ return [
         'color' => 'Color',
         'size' => 'Size',
         'home' => 'Home',
-        'in_stock' => 'IN STOCK',
-        'out_of_stock' => 'OUT OF STOCK',
+        'in_stock' => 'In Stock',
+        'out_of_stock' => 'Out of Stock',
         'customer_reviews' => 'Customer Reviews',
         'no_reviews' => 'No reviews for this product yet.',
         'no_review_text' => 'No review written.',
@@ -53,7 +53,7 @@ return [
         'days_ago' => '{1} :days day ago|[2,*] :days days ago',
         'description' => 'Description',
         'reviews' => 'Reviews',
-        'add_to_cart' => 'Add to Cart',
+        'add_to_cart' => 'Add to Bag',
         'increase_quantity' => 'Increase quantity',
         'decrease_quantity' => 'Decrease quantity',
         'selected_variant_not' => 'Selected variant not available.',
@@ -100,6 +100,11 @@ return [
     ],
 
     'cart' => [
+
+        // Apple-style "Added to Bag" panel
+        'added_to_bag' => 'Added to Bag',
+        'review_bag' => 'Review Bag',
+        'check_out' => 'Check Out',
 
         // Breadcrumb
         'breadcrumb_home' => 'Home',
@@ -233,7 +238,7 @@ return [
         'title' => 'My Wishlist',
         'empty' => 'Your wishlist is empty.',
         'reviews' => 'Reviews',
-        'add_to_cart' => 'Add to Cart',
+        'add_to_cart' => 'Add to Bag',
     ],
 
     'register' => [

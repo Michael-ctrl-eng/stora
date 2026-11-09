@@ -1421,3 +1421,353 @@ footer .bg-black span { color: var(--ap-tertiary); font-size: 12px; }
 .review-customer-info { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .review-rating { margin-bottom: 6px; }
 .review-time { color: #6e6e73; font-size: .85rem; margin-left: 6px; }
+
+/* ==========================================================================
+   19. PDP BUY BOX — Apple-grade alignment (stock, stars, heart, qty, CTA)
+   ========================================================================== */
+
+/* Stock status: icon + word, perfectly centered, no pill (Apple buy page) */
+.product-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ap-success);
+    line-height: 1;
+    letter-spacing: -0.01em;
+}
+.product-stock .stock-icon { font-size: 15px; line-height: 1; }
+.product-stock.is-out,
+.product-stock.is-out .stock-icon { color: var(--ap-danger); }
+
+/* Stars: single aligned row, no baseline drift */
+.stars { gap: 8px; }
+.stars-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: #f5a623;
+    line-height: 1;
+}
+.stars-row i { font-size: 13px; line-height: 1; }
+.stars .spanstar,
+.review-time { font-size: 13px; color: var(--ap-tertiary); line-height: 1; }
+.review-rating { gap: 6px; }
+.review-rating .stars-row i { font-size: 13px; }
+
+/* Wishlist heart: real 40px touch target, optically centered */
+.wish-heart {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-top: 2px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    border-radius: 50%;
+    color: var(--ap-secondary);
+    cursor: pointer;
+    transition: background 0.2s var(--ap-ease), color 0.2s var(--ap-ease), transform 0.15s var(--ap-ease);
+}
+.wish-heart i { font-size: 19px; line-height: 1; }
+.wish-heart:hover { background: var(--ap-canvas-alt); color: #ff375f; }
+.wish-heart:active { transform: scale(0.92); }
+.wish-heart.is-active,
+.wish-heart.is-active i { color: #ff375f; }
+
+/* Title + heart row */
+.pro-textarea .d-flex.align-items-center { gap: 10px; }
+.pro-textarea .d-flex.align-items-center .sec-heading { flex: 1 1 auto; min-width: 0; }
+
+/* Quantity stepper: 48px tall, icons optically centered */
+.quantity {
+    height: 48px;
+    border-radius: var(--ap-radius-pill);
+}
+.quantity button {
+    width: 48px;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+}
+.quantity button i { font-size: 13px; line-height: 1; }
+.quantity input {
+    width: 44px;
+    height: 100%;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Add to Bag — matches stepper height + radius exactly */
+.add-to-cart {
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 32px !important;
+    font-size: 16px !important;
+    font-weight: 500;
+    letter-spacing: -0.016em;
+    border-radius: var(--ap-radius-pill) !important;
+    white-space: nowrap;
+    transition: background 0.2s var(--ap-ease), transform 0.15s var(--ap-ease), opacity 0.2s var(--ap-ease);
+}
+.add-to-cart:hover { background: var(--ap-blue-hover); transform: scale(1.015); }
+.add-to-cart:active { transform: scale(0.98); }
+.add-to-cart:disabled,
+.add-to-cart.is-adding { opacity: 0.6; pointer-events: none; }
+
+.cart-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+@media (max-width: 575.98px) {
+    .cart-actions .quantity,
+    .cart-actions .add-to-cart { width: 100%; justify-content: center; }
+}
+
+/* Gallery arrows: centered chevron icons (no raw text glyphs) */
+.slick-prev,
+.slick-next {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 2;
+}
+.slick-prev::before,
+.slick-next::before { content: none !important; }
+.slick-prev i,
+.slick-next i { font-size: 15px; line-height: 1; }
+.pdp-gallery .slick-prev,
+.pdp-gallery .slick-next { width: 40px; height: 40px; }
+
+/* ==========================================================================
+   20. "ADDED TO BAG" PANEL — Apple bag popover
+   ========================================================================== */
+.stora-bag-pop {
+    position: fixed;
+    top: 72px;
+    right: 22px;
+    z-index: 1060;
+    width: 340px;
+    max-width: calc(100vw - 32px);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    transition: opacity 0.28s var(--ap-ease), transform 0.28s var(--ap-ease);
+}
+.stora-bag-pop.open {
+    pointer-events: auto;
+    opacity: 1;
+    transform: none;
+}
+.stora-bag-pop-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--ap-hairline-soft);
+    border-radius: 18px;
+    box-shadow: 0 12px 44px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 20px 20px 18px;
+}
+.stora-bag-pop-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ap-tertiary);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+}
+.stora-bag-pop-close:hover { color: var(--ap-ink); }
+.stora-bag-pop-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ap-ink);
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+    padding-right: 24px;
+    margin-bottom: 14px;
+}
+.stora-bag-pop-head i { color: var(--ap-success); font-size: 19px; }
+.stora-bag-pop-item { display: flex; gap: 14px; align-items: flex-start; }
+.stora-bag-pop-item img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: var(--ap-canvas-alt);
+    flex: 0 0 auto;
+}
+.stora-bag-pop-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ap-ink);
+    line-height: 1.35;
+    letter-spacing: -0.014em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.stora-bag-pop-price { font-size: 14px; color: var(--ap-secondary); margin-top: 3px; }
+.stora-bag-pop-qty { font-size: 12px; color: var(--ap-tertiary); margin-left: 8px; }
+.stora-bag-pop-stock {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ap-success);
+    margin-top: 6px;
+    line-height: 1;
+}
+.stora-bag-pop-stock i { font-size: 12px; }
+.stora-bag-pop-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.stora-bag-pop-review,
+.stora-bag-pop-checkout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    border-radius: var(--ap-radius-pill);
+    font-size: 15px;
+    letter-spacing: -0.014em;
+    text-decoration: none !important;
+    transition: background 0.2s var(--ap-ease), border-color 0.2s var(--ap-ease);
+}
+.stora-bag-pop-review {
+    border: 1px solid var(--ap-hairline);
+    color: var(--ap-link) !important;
+    background: #fff;
+}
+.stora-bag-pop-review:hover { border-color: var(--ap-link); background: rgba(0, 113, 227, 0.04); }
+.stora-bag-pop-checkout {
+    background: var(--ap-blue);
+    color: #fff !important;
+    font-weight: 500;
+}
+.stora-bag-pop-checkout:hover { background: var(--ap-blue-hover); }
+
+@media (max-width: 640px) {
+    .stora-bag-pop {
+        top: auto;
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+        transform: translateY(16px);
+    }
+    .stora-bag-pop.open { transform: none; }
+    .stora-bag-pop-actions { flex-direction: row; }
+    .stora-bag-pop-review,
+    .stora-bag-pop-checkout { flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stora-bag-pop { transition: opacity 0.2s; transform: none; }
+    .add-to-cart:hover,
+    .add-to-cart:active { transform: none; }
+}
+
+/* ==========================================================================
+   21. TOASTR — refined (errors / wishlist / info only; cart uses bag panel)
+   ========================================================================== */
+#toast-container { top: 72px !important; right: 20px !important; }
+#toast-container > .toast {
+    padding: 13px 40px 13px 44px !important;
+    min-width: 280px;
+    max-width: 360px;
+    background-image: none !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    margin: 0 0 10px !important;
+    opacity: 1 !important;
+}
+#toast-container > .toast-success::before,
+#toast-container > .toast-error::before,
+#toast-container > .toast-warning::before,
+#toast-container > .toast-info::before {
+    position: absolute !important;
+    left: 15px;
+    top: 50% !important;
+    margin-top: 0 !important;
+    transform: translateY(-50%);
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1;
+}
+#toast-container > .toast-error::before {
+    content: "\f06a";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--ap-danger);
+}
+#toast-container > .toast-warning::before {
+    content: "\f071";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #c93400;
+}
+#toast-container > .toast-info::before {
+    content: "\f05a";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--ap-blue);
+}
+#toast-container .toast-message { padding: 0; line-height: 1.4; }
+#toast-container .toast-progress { display: none !important; }
+#toast-container .toast-close-button { right: 2px; top: 2px; font-size: 18px; }
+
+/* ==========================================================================
+   22. PDP PRICE — effective price + struck-through original (Apple style)
+   ========================================================================== */
+.pdp-price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    line-height: 1.1;
+}
+.pdp-price-original {
+    color: var(--ap-tertiary);
+    text-decoration: line-through;
+    font-size: 0.68em;
+    font-weight: 500;
+    margin-right: 12px;
+    line-height: 1;
+}
+.pdp-price-current { line-height: 1; }
+
+/* Color swatches: always visible, clear selected ring */
+.color-circle {
+    border: 1px solid var(--ap-hairline);
+    box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+input[type="radio"]:checked + .color-circle {
+    box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px var(--ap-blue);
+    border-color: var(--ap-blue);
+}
+
+/* Gallery thumbnails: legible inactive state */
+.pdp-gallery-thumb { opacity: 0.78; }
+.pdp-gallery-thumb img {
+    border: 1px solid var(--ap-hairline-soft);
+    border-radius: 10px;
+}
+.pdp-gallery-thumb.slick-current { opacity: 1; }
+.pdp-gallery-thumb.slick-current img { border-color: var(--ap-blue); }

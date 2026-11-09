@@ -69,12 +69,18 @@ class ProductController extends Controller
             ->first();
 
         if ($variant) {
-            $stockStatus = $variant->stock > 0 ? __('store.product_detail.in_stock') : 'OUT OF STOCK';
+            $stockStatus = $variant->stock > 0 ? __('store.product_detail.in_stock') : __('store.product_detail.out_of_stock');
             $isOutOfStock = $variant->stock <= 0;
+
+            // Effective price = discount when present (matches what the cart charges).
+            $effectivePrice = $variant->converted_discount_price ?? $variant->converted_price;
+            $originalPrice = ($variant->converted_discount_price && $variant->converted_discount_price < $variant->converted_price)
+                ? $variant->converted_price : null;
 
             return response()->json([
                 'success' => true,
-                'price' => number_format($variant->converted_price, 2),
+                'price' => number_format($effectivePrice, 2),
+                'original_price' => $originalPrice !== null ? number_format($originalPrice, 2) : null,
                 'stock' => $stockStatus,
                 'is_out_of_stock' => $isOutOfStock,
                 'currency_symbol' => activeCurrency()->symbol,

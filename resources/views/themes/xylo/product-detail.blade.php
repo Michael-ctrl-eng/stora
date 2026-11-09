@@ -42,24 +42,32 @@
             </div>
             <div class="col-md-6 pro-textarea">
                 @if ($inStock)
-                    <div id="product-stock" class="mb-2 mt-3 btnss">{{ __('store.product_detail.in_stock') }}</div>
+                    <div id="product-stock" class="product-stock mb-2 mt-3">
+                        <i class="fa-solid fa-circle-check stock-icon" aria-hidden="true"></i>
+                        <span class="stock-label">{{ __('store.product_detail.in_stock') }}</span>
+                    </div>
                 @else
-                    <div id="product-stock" class="mb-2 mt-3 btnss text-danger">OUT OF STOCK</div>
+                    <div id="product-stock" class="product-stock mb-2 mt-3 is-out">
+                        <i class="fa-solid fa-circle-xmark stock-icon" aria-hidden="true"></i>
+                        <span class="stock-label">{{ __('store.product_detail.out_of_stock') }}</span>
+                    </div>
                 @endif
                 @php
                     $averageRating = round($product->reviews_avg_rating, 1);
                 @endphp
-                <div class="stars">
+                <div class="stars d-inline-flex align-items-center">
+                    <span class="stars-row" aria-hidden="true">
                     @for ($i = 1; $i <= 5; $i++)
                         @if ($i <= floor($averageRating))
-                            <i class="fa-solid fa-star text-warning"></i>
+                            <i class="fa-solid fa-star"></i>
                         @elseif ($i - 0.5 == $averageRating)
-                            <i class="fa-solid fa-star-half-alt text-warning"></i>
+                            <i class="fa-solid fa-star-half-alt"></i>
                         @else
-                            <i class="fa-regular fa-star text-muted"></i>
+                            <i class="fa-regular fa-star"></i>
                         @endif
                     @endfor
-                    <span class="spanstar"> ({{ $product->reviews_count }} {{ __('store.product_detail.customer_reviews') }})</span>
+                    </span>
+                    <span class="spanstar">({{ $product->reviews_count }} {{ __('store.product_detail.customer_reviews') }})</span>
                 </div>
                 <div class="d-flex align-items-center mb-3">
                 <h1 class="sec-heading mb-0 me-3">{{ $product->translation->name }}</h1>
@@ -77,13 +85,26 @@
                     @endphp
                 @endauth
 
-                <button id="test-heart" class="border-0 bg-transparent">
-                    <i class="{{ $isFavorite ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-secondary' }} fs-4"></i>
+                <button id="test-heart" class="wish-heart" type="button" aria-label="{{ __('store.product_detail.add_to_wishlist') ?: 'Add to wishlist' }}">
+                    <i class="{{ $isFavorite ? 'fa-solid fa-heart' : 'fa-regular fa-heart' }}"></i>
                 </button>
 
             </div>
 
-                <h2><span id="currency-symbol">{{ $currency->symbol }}</span><span  id="variant-price" >{{ $product->primaryVariant->converted_price ?? 'N/A' }}</span></h2>
+                @php
+                    $primaryVariant = $product->primaryVariant;
+                    $displayPrice = $primaryVariant->converted_discount_price ?? $primaryVariant->converted_price;
+                    $originalPrice = $primaryVariant->converted_discount_price && $primaryVariant->converted_discount_price < $primaryVariant->converted_price
+                        ? $primaryVariant->converted_price : null;
+                @endphp
+                <h2 class="pdp-price">
+                    @if ($originalPrice)
+                        <span class="pdp-price-original" id="variant-price-original">{{ $currency->symbol }}{{ number_format($originalPrice, 2) }}</span>
+                    @else
+                        <span class="pdp-price-original d-none" id="variant-price-original"></span>
+                    @endif
+                    <span class="pdp-price-current"><span id="currency-symbol">{{ $currency->symbol }}</span><span id="variant-price">{{ number_format($displayPrice, 2) }}</span></span>
+                </h2>
                 <p>{{ $product->translation->short_description }}</p>
 
 
@@ -128,13 +149,13 @@
 
 
                 <!-- Quantity Selector and Cart Button -->
-                <div class="cart-actions mt-3 d-flex">
-                    <div class="quantity me-4">
-                        <button onclick="changeQty(-1)">-</button>
-                        <input type="text" id="qty" value="1">
-                        <button onclick="changeQty(1)">+</button>
+                <div class="cart-actions mt-4">
+                    <div class="quantity" role="group" aria-label="Quantity">
+                        <button type="button" onclick="changeQty(-1)" aria-label="{{ __('store.product_detail.decrease_quantity') }}"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+                        <input type="text" id="qty" value="1" inputmode="numeric" aria-label="Quantity">
+                        <button type="button" onclick="changeQty(1)" aria-label="{{ __('store.product_detail.increase_quantity') }}"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
                     </div>
-                    <button class="add-to-cart read-more" onclick="addToCart({{ $product->id }}, '{{ $product->product_type }}')">{{ __('store.product_detail.add_to_cart') }}</button>
+                    <button class="add-to-cart read-more" onclick="addToCart({{ $product->id }}, '{{ $product->product_type }}', this)">{{ __('store.product_detail.add_to_cart') }}</button>
                 </div>
 
             </div>
@@ -227,10 +248,12 @@
                                     </div>
 
                                     <!-- Display Rating with Stars -->
-                                   <div class="review-rating">
+                                   <div class="review-rating d-inline-flex align-items-center">
+                                        <span class="stars-row" aria-hidden="true">
                                         @for($i = 1; $i <= 5; $i++)
-                                            <span style="color: {{ $i <= $review->rating ? 'gold' : '#ccc' }}">&#9733;</span>
+                                            <i class="{{ $i <= $review->rating ? 'fa-solid fa-star' : 'fa-regular fa-star' }}"></i>
                                         @endfor
+                                        </span>
                                         <span class="review-time">
                                             @php
                                                 $created_at = \Carbon\Carbon::parse($review->created_at);
@@ -255,17 +278,19 @@
                         <div class="average-rating">
                             
 
-                            <div class="review-rating">
+                            <div class="review-rating d-inline-flex align-items-center">
+                                <span class="stars-row" aria-hidden="true">
                                 @for($i = 1; $i <= 5; $i++)
                                     @if($i <= floor($product->reviews_avg_rating))
-                                        <span style="color: gold">★</span>
+                                        <i class="fa-solid fa-star"></i>
                                     @elseif($i == ceil($product->reviews_avg_rating) && ($product->reviews_avg_rating - floor($product->reviews_avg_rating)) >= 0.5)
-                                        <span style="color: gold">★</span>
+                                        <i class="fa-solid fa-star-half-alt"></i>
                                     @else
-                                        <span style="color: #ccc">★</span>
+                                        <i class="fa-regular fa-star"></i>
                                     @endif
                                 @endfor
-                                {{ number_format($product->reviews_avg_rating, 1) }} <span>{{ __('store.product_detail.average_rating') }}</span>
+                                </span>
+                                <span class="ms-1">{{ number_format($product->reviews_avg_rating, 1) }} <span>{{ __('store.product_detail.average_rating') }}</span></span>
                             </div>
                         </div>
                 @endif
@@ -298,13 +323,13 @@
                 },
                 success: function(response) {
                     if(response.status === 'added') {
-                        icon.removeClass('fa-regular text-secondary')
-                            .addClass('fa-solid text-danger');
-                        toastr.success(response.message || 'Added to favorites ❤️');
+                        icon.removeClass('fa-regular').addClass('fa-solid');
+                        $('#test-heart').addClass('is-active');
+                        toastr.success(response.message || 'Added to favorites');
                     } else if(response.status === 'removed') {
-                        icon.removeClass('fa-solid text-danger')
-                            .addClass('fa-regular text-secondary');
-                        toastr.info(response.message || 'Removed from favorites 💔');
+                        icon.removeClass('fa-solid').addClass('fa-regular');
+                        $('#test-heart').removeClass('is-active');
+                        toastr.info(response.message || 'Removed from favorites');
                     }
                 },
                 error: function(xhr) {
@@ -371,8 +396,8 @@
                     slidesToScroll: 1,
                     fade: true,
                     speed: 260,
-                    prevArrow: '<button type="button" class="slick-prev" aria-label="Previous image">←</button>',
-                    nextArrow: '<button type="button" class="slick-next" aria-label="Next image">→</button>',
+                    prevArrow: '<button type="button" class="slick-prev" aria-label="Previous image"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>',
+                    nextArrow: '<button type="button" class="slick-next" aria-label="Next image"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>',
                     asNavFor: $('.pdp-gallery-thumbs').length ? '.pdp-gallery-thumbs' : null,
                 });
                 var $thumbs = $('.pdp-gallery-thumbs');
@@ -439,13 +464,21 @@
                 success: function (response) {
                     if (response.success) {
                         $('#variant-price').text(response.price);
-                        $('#product-stock').text(response.stock);
+                        var $orig = $('#variant-price-original');
+                        if (response.original_price) {
+                            $orig.text(response.currency_symbol + response.original_price).removeClass('d-none');
+                        } else {
+                            $orig.addClass('d-none');
+                        }
+                        $('#product-stock .stock-label').text(response.stock);
                         $('#currency-symbol').text(response.currency_symbol);
 
                         if (response.is_out_of_stock) {
-                            $('#product-stock').addClass('text-danger');
+                            $('#product-stock').addClass('is-out');
+                            $('#product-stock .stock-icon').removeClass('fa-circle-check').addClass('fa-circle-xmark');
                         } else {
-                            $('#product-stock').removeClass('text-danger');
+                            $('#product-stock').removeClass('is-out');
+                            $('#product-stock .stock-icon').removeClass('fa-circle-xmark').addClass('fa-circle-check');
                         }
                     } else {
                         console.log('Unable to fetch variant price.');
@@ -473,7 +506,7 @@
             qtyInput.value = newQty;
         }
 
-        function addToCart(productId, product_type) {
+        function addToCart(productId, product_type, btn) {
             const quantity = parseInt(document.getElementById("qty").value) || 1;
             const attributeInputs = document.querySelectorAll('#product-attributes input[type="radio"]:checked');
 
@@ -484,7 +517,8 @@
 
             storaApi.addToCart(productId, {
                 quantity: quantity,
-                attribute_value_ids: selectedAttributes
+                attribute_value_ids: selectedAttributes,
+                button: btn
             });
         }
 

@@ -56,6 +56,36 @@
 </head>
 <body class="apple-theme">
     @include('themes.xylo.layouts.header')
+
+    {{-- ===== Apple-style "Added to Bag" panel =====
+         Opens under the bag icon whenever an item is added to the cart.
+         Data comes from the /cart/add JSON response (added { name, image,
+         price, quantity, in_stock }) — nothing is faked client-side. --}}
+    <div class="stora-bag-pop" id="storaBagPop" role="dialog" aria-modal="false" aria-labelledby="storaBagPopTitle" aria-hidden="true">
+        <div class="stora-bag-pop-card">
+            <button type="button" class="stora-bag-pop-close" id="storaBagPopClose" aria-label="Close">&times;</button>
+            <div class="stora-bag-pop-head">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                <span id="storaBagPopTitle">{{ __('store.cart.added_to_bag') }}</span>
+            </div>
+            <div class="stora-bag-pop-item">
+                <img id="storaBagPopImg" src="" alt="" width="72" height="72" decoding="async">
+                <div class="stora-bag-pop-meta">
+                    <div class="stora-bag-pop-name" id="storaBagPopName"></div>
+                    <div class="stora-bag-pop-price"><span id="storaBagPopPrice"></span><span class="stora-bag-pop-qty" id="storaBagPopQty"></span></div>
+                    <div class="stora-bag-pop-stock" id="storaBagPopStock">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                        <span>{{ __('store.product_detail.in_stock') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stora-bag-pop-actions">
+                <a href="{{ route('cart.view') }}" class="stora-bag-pop-review">{{ __('store.cart.review_bag') }}</a>
+                <a href="{{ route('checkout.index') }}" class="stora-bag-pop-checkout">{{ __('store.cart.check_out') }}</a>
+            </div>
+        </div>
+    </div>
+
     @yield('content')
     @include('themes.xylo.layouts.footer')
 
@@ -112,15 +142,69 @@
                     });
                 });
             }
+            /**
+             * Apple-style "Added to Bag" panel.
+             * data = { message, cart_count, added: { name, image, price, quantity, in_stock } }
+             */
+            var bagPopTimer = null;
+            function showBagPanel(data) {
+                var pop = document.getElementById('storaBagPop');
+                if (!pop) { toast('success', data.message || 'Added to Bag'); return; }
+                var added = data.added || {};
+                var img = document.getElementById('storaBagPopImg');
+                if (img) {
+                    if (added.image) { img.src = added.image; img.alt = added.name || ''; img.style.display = ''; }
+                    else { img.removeAttribute('src'); img.style.display = 'none'; }
+                }
+                document.getElementById('storaBagPopName').textContent = added.name || '';
+                document.getElementById('storaBagPopPrice').textContent = added.price || '';
+                var qtyEl = document.getElementById('storaBagPopQty');
+                if (qtyEl) { qtyEl.textContent = added.quantity ? ('Qty: ' + added.quantity) : ''; }
+                var stock = document.getElementById('storaBagPopStock');
+                if (stock) { stock.style.display = added.in_stock === false ? 'none' : ''; }
+                // restart the open animation
+                pop.classList.remove('open');
+                void pop.offsetWidth;
+                pop.classList.add('open');
+                pop.setAttribute('aria-hidden', 'false');
+                if (bagPopTimer) clearTimeout(bagPopTimer);
+                bagPopTimer = setTimeout(hideBagPanel, 6500);
+            }
+            function hideBagPanel() {
+                var pop = document.getElementById('storaBagPop');
+                if (!pop) return;
+                pop.classList.remove('open');
+                pop.setAttribute('aria-hidden', 'true');
+                if (bagPopTimer) { clearTimeout(bagPopTimer); bagPopTimer = null; }
+            }
+            document.addEventListener('click', function (e) {
+                var pop = document.getElementById('storaBagPop');
+                if (pop && pop.classList.contains('open') && !pop.contains(e.target)) hideBagPanel();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') hideBagPanel();
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                var closeBtn = document.getElementById('storaBagPopClose');
+                if (closeBtn) closeBtn.addEventListener('click', hideBagPanel);
+            });
+
             /** Shared "add to cart" UX used by listing pages. */
             function addToCart(productId, opts) {
                 opts = opts || {};
+                var btn = (typeof opts.button === 'object' && opts.button) ? opts.button : null;
+                var original = btn ? btn.innerHTML : null;
+                if (btn) { btn.disabled = true; btn.classList.add('is-adding'); }
                 return storaPost('/cart/add', {
                     product_id: productId,
                     quantity: opts.quantity || 1,
                     attribute_value_ids: opts.attribute_value_ids || []
                 }).then(function (data) {
-                    toast('success', data.message || 'Added to cart');
+                    if (data.added && data.added.name) {
+                        showBagPanel(data);
+                    } else {
+                        toast('success', data.message || 'Added to Bag');
+                    }
                     updateCartBadge(data.cart_count);
                     if (typeof opts.onSuccess === 'function') opts.onSuccess(data);
                 }).catch(function (err) {
@@ -135,9 +219,11 @@
                         toast('error', err.message || 'Could not reach the store. Please try again.');
                     }
                     if (typeof opts.onError === 'function') opts.onError(err);
+                }).finally(function () {
+                    if (btn) { btn.disabled = false; btn.classList.remove('is-adding'); if (original) btn.innerHTML = original; }
                 });
             }
-            return { post: storaPost, addToCart: addToCart, toast: toast, updateCartBadge: updateCartBadge, csrf: csrf };
+            return { post: storaPost, addToCart: addToCart, toast: toast, updateCartBadge: updateCartBadge, csrf: csrf, showBagPanel: showBagPanel, hideBagPanel: hideBagPanel };
         })();
     </script>
 
