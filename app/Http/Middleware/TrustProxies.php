@@ -10,9 +10,15 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * The app runs serverless behind Vercel's edge (TLS is terminated at the
+     * edge and forwarded to the Lambda over plain HTTP). Without trusting the
+     * proxy, Laravel ignores X-Forwarded-Proto and generates http:// asset
+     * URLs on an https page — browsers then block the stylesheets and scripts
+     * as mixed content and the page renders unstyled.
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
