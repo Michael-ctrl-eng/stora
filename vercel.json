@@ -1,9 +1,9 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "framework": null,
-    "installCommand": null,
-    "buildCommand": null,
-    "outputDirectory": null,
+    "installCommand": "npm install --no-audit --no-fund --loglevel=error",
+    "buildCommand": "npm run build",
+    "outputDirectory": "public",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.4",
