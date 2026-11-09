@@ -123,15 +123,28 @@ $(document).ready(function () {
 document.addEventListener("DOMContentLoaded", function () {
     const elements = document.querySelectorAll('.animate-on-scroll');
 
+    const reveal = (el) => {
+        el.classList.add('animate__animated', 'animate__fadeIn');
+    };
+
+    // Safety net: never leave content permanently invisible
+    if (!('IntersectionObserver' in window)) {
+        elements.forEach(reveal);
+        return;
+    }
+
+    // A low threshold reveals tall sections as soon as they enter the
+    // viewport — a 0.5 ratio can never be reached by sections taller
+    // than the viewport itself.
     const observerOptions = {
-        threshold: 0.5 // Trigger when 50% of the element is visible
+        threshold: 0.1
     };
 
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 // Add animate.css classes to trigger animation
-                entry.target.classList.add('animate__animated', 'animate__fadeIn');
+                reveal(entry.target);
                 // Unobserve so it doesn't animate again
                 observer.unobserve(entry.target);
             }

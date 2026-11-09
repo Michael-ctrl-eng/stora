@@ -1,41 +1,51 @@
 <p align="center">
-  <img src="https://i.ibb.co/1tRYZP5R/Velstore-logo-v1.png" alt="Velstore open-source multi-vendor Laravel eCommerce solution">
+  <img src="public/images/logo.png" alt="Stora — beautifully simple commerce" width="72">
+</p>
+
+<h1 align="center">Stora</h1>
+
+<p align="center">
+  <strong>Everything you love. In one place.</strong><br>
+  An Apple-inspired, white-minimal glassmorphism storefront — built on Laravel.
 </p>
 
 <p align="center">
-
-  <a href="https://packagist.org/packages/velstorelabs/velstore">
-    <img src="https://poser.pugx.org/velstorelabs/velstore/d/total" alt="Velstore Packagist Downloads">
-  </a>
-  
-  <a href="https://github.com/velstorelabs/velstore/releases">
-    <img src="https://poser.pugx.org/velstorelabs/velstore/v/stable" alt="Velstore Latest Stable Version">
-  </a>
-
-  <a href="https://github.com/velstorelabs/velstore/actions/workflows/ci.yml">
-    <img src="https://github.com/velstorelabs/velstore/actions/workflows/ci.yml/badge.svg" alt="CI status for Velstore">
-  </a>
-
-  <a href="https://github.com/velstorelabs/velstore/blob/master/LICENSE">
-    <img src="https://poser.pugx.org/velstorelabs/velstore/license" alt="License">
-  </a>
+  <img src="https://img.shields.io/badge/Laravel-10-FF2D20?logo=laravel&logoColor=white" alt="Laravel 10">
+  <img src="https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white" alt="PHP 8.1+">
+  <img src="https://img.shields.io/badge/theme-Apple.com%20style-0071e3" alt="Apple.com style theme">
+  <img src="https://img.shields.io/badge/deploy-Vercel-000000?logo=vercel" alt="Deploy on Vercel">
 </p>
 
 <p align="center">
-  <img src="https://i.ibb.co/9mL3YZQV/velstore-demo1-resized.png" alt="Velstore open-source multi-vendor Laravel eCommerce solution demo">
+  <img src="docs/screenshots/readme-hero.png" alt="Stora storefront hero — Apple.com style white minimal theme">
 </p>
 
-Velstore is a powerful and open-source multi-vendor Laravel eCommerce solution. It is fully customizable and ready to use. It is the perfect choice for launching your online store with ease and efficiency.
+Stora is a fork of [Velstore](https://github.com/velstorelabs/velstore), the open-source
+multi-vendor Laravel eCommerce platform, re-imagined with a premium Apple.com-compatible
+theme: alternating white / `#f5f5f7` sections, a translucent glassy sticky navigation
+(`backdrop-filter: saturate(180%) blur(20px)`), SF-style typography, pill buttons and
+rounded product tiles — with the original logo retained and the store rebranded to **Stora**.
+
+> The seeded catalog contains **real studio product photography only**, curated demo
+> brands and honest pricing — no fabricated orders, reviews or revenue numbers anywhere.
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Categories](docs/screenshots/readme-cats.png) | ![Trending products](docs/screenshots/readme-products.png) |
+| ![Product detail](docs/screenshots/readme-pdp.png) | ![Shop](docs/screenshots/readme-shop.png) |
 
 ## Features
 
-- Built with Laravel
-- Multi vendor support
-- Multi lingual support  
-- Dedicated Admin, Seller, and Customer panels 
-- Modular and extensible architecture
-- Translated to 19 languages
+- Built with Laravel 10
+- Apple.com-style storefront theme (glassmorphism, white minimal)
+- Multi-vendor support
+- Multi-lingual storefront — translated to 19 languages
+- Dedicated Admin, Seller, and Customer panels
 - Integrated payment gateways: PayPal and Stripe
+- SQLite demo catalog included — zero-database quick start
+- One-file Vercel deployment (`api/index.php` + `vercel.json`)
 
 ### Supported Languages
 
@@ -64,73 +74,72 @@ Velstore is a powerful and open-source multi-vendor Laravel eCommerce solution. 
     <img src="https://flagicons.lipis.dev/flags/4x3/th.svg" title="Thai" width="24">
 </p>
 
+## Deploy to Vercel
 
-### Trending Products
+The repo ships with a ready-made serverless layer (`api/index.php`, `vercel.json`,
+`.vercelignore`) powered by the community [vercel-php](https://github.com/vercel-community/php)
+runtime (PHP 8.3). The seeded SQLite catalog is bundled with the deployment and
+provisioned to a writable `/tmp` copy per instance — no external database required.
 
-<p align="center">
-  <img src="https://i.ibb.co/7Jy8q2CS/trending-product-1.png" alt="Velstore open-source multi-vendor Laravel eCommerce solution demo">
-</p>
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FMichael-ctrl-eng%2Fstora&project-name=stora&repository-name=stora)
 
-### Featured Products
+All required environment variables (including `APP_KEY`, SQLite path, cookie sessions,
+`/tmp` caches) are pre-configured in `vercel.json` — the deployment needs **no manual
+setup**. Just import the repository at [vercel.com/new](https://vercel.com/new) and press
+Deploy.
 
-<p align="center">
-  <img src="https://i.ibb.co/ch5w4bv2/featured-products-velstore-laravel.png" alt="Velstore open-source multi-vendor Laravel eCommerce solution demo">
-</p>
+> Vercel Hobby bandwidth applies; static assets are served through the PHP function.
 
-### Categories
-
-<p align="center">
-  <img src="https://i.ibb.co/vvKgdWK9/categories-velstore-laravel.png" alt="Velstore open-source multi-vendor Laravel eCommerce solution demo">
-</p>
-
-## Installation Guide  
-
-Follow these steps to set up Velstore:  
-
-### **Install via Composer**  
-Run the following command to create a new Velstore project:
-```sh
-composer create-project velstorelabs/velstore
-```
-
-If you didn't have `.env` you can copy it from `.env.example`.
+## Local Development
 
 ```sh
+# 1. PHP dependencies
+composer install
+
+# 2. Environment (SQLite by default — no MySQL needed for the demo)
 cp .env.example .env
-```
+php artisan key:generate
+touch database/database.sqlite
 
-Create a new database and update the database credentials in `.env`. Run the following command to install Velstore:
-```sh
-php artisan install:velstore --with-import
-```
+# 3. Schema + demo catalog (products, categories, brands, banners — no fake orders)
+php artisan migrate:fresh --seed
 
-### **Options**
-- `--with-import` Imports sample data to help you get started quickly.
+# 4. Frontend assets
+npm install && npm run build
 
-Start the Laravel server:
-```sh
+# 5. Serve
 php artisan serve
 ```
 
-If you found error `Vite manifest not found at`, you should run this in different terminal:
-```sh
-npm run dev
-```
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-Your Velstore instance is now running! Open your browser and visit:
+For MySQL, point `DB_CONNECTION` / `DB_HOST` / `DB_DATABASE` in `.env` at your database
+and re-run the migrations.
+
+### Simulate the Vercel runtime locally
+
+The exact launcher the runtime uses:
+
 ```sh
-http://127.0.0.1:8000
+DB_CONNECTION=sqlite DB_DATABASE=/tmp/stora.sqlite SESSION_DRIVER=cookie CACHE_DRIVER=array \
+FILESYSTEM_DISK=public LOG_CHANNEL=stderr APP_KEY=base64:XXNk2la7ErHb/WeT859NUQVk7vMqK9cirDpt1hS6FNA= \
+VIEW_COMPILED_PATH=/tmp/storage/framework/views \
+php -S 127.0.0.1:8080 -t public api/index.php
 ```
 
 ## Tech Stack
-- Backend: Laravel 10+
-- Database: MySQLi
-- Frontend: Blade (with Laravel UI)
-- Authentication: Laravel Sanctum
+
+- Backend: Laravel 10 (PHP 8.1+)
+- Database: MySQL (self-hosted) / SQLite (demo, Vercel)
+- Frontend: Blade + Vite, custom `apple.css` design layer
+- Authentication: Laravel Sanctum / Laravel UI
 - DataTables: Yajra Laravel Datatables
+- Deployment: any PHP host, or Vercel via vercel-php
 
-## 💼 Hire Us
-Need ecommerce development, Velstore customization, or support for your project?  
-We’re ready to help.  
+## Credits & License
 
-[Share your project details](https://forms.gle/ZF9E9t5gUKShfHLLA)
+Stora is a rebranded, re-themed fork of
+[Velstore](https://github.com/velstorelabs/velstore) by
+[Velstore Labs](https://github.com/velstorelabs) — released under the same license
+(see [LICENSE](LICENSE)). Storefront photography and product renders are demo assets
+created for this project.

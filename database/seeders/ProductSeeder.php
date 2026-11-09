@@ -298,12 +298,8 @@ class ProductSeeder extends Seeder
                     ]);
                 }
 
-                // Copy the bundled product image into the public storage disk
-                $source = public_path('images/products/'.$item['image']);
-                $localPath = 'products/'.$item['image'];
-                if (is_file($source)) {
-                    Storage::disk('public')->put($localPath, file_get_contents($source));
-                }
+                // Reference the bundled product image directly from public/images (served as a static asset — no symlink needed)
+                $localPath = 'images/products/'.$item['image'];
 
                 $product->images()->create([
                     'name' => $item['name'],

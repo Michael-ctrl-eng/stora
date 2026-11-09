@@ -35,12 +35,8 @@ class BannerSeeder extends Seeder
                     'status' => $item['status'],
                 ]);
 
-                // Copy the bundled hero image into the public storage disk
-                $source = public_path('images/banners/'.$item['translations']['image']);
-                $localPath = 'banners/'.$item['translations']['image'];
-                if (is_file($source)) {
-                    Storage::disk('public')->put($localPath, file_get_contents($source));
-                }
+                // Reference the bundled hero image directly from public/images (served as a static asset — no symlink needed)
+                $localPath = 'images/banners/'.$item['translations']['image'];
 
                 foreach ($languages as $lang) {
                     $translatedTitle = match ($lang->code) {

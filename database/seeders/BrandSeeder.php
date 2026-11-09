@@ -79,12 +79,8 @@ class BrandSeeder extends Seeder
             $brandId = DB::table('brands')->where('slug', $brandData['slug'])->value('id');
 
             if (! $brandId) {
-                // Copy the bundled wordmark logo into the public storage disk
-                $logoPath = 'brands/'.$brandData['slug'].'.png';
-                $source = public_path('images/brands/'.$brandData['slug'].'.png');
-                if (is_file($source) && ! Storage::disk('public')->exists($logoPath)) {
-                    Storage::disk('public')->put($logoPath, file_get_contents($source));
-                }
+                // Reference the bundled wordmark logo directly from public/images (served as a static asset — no symlink needed)
+                $logoPath = 'images/brands/'.$brandData['slug'].'.png';
 
                 $brandId = DB::table('brands')->insertGetId([
                     'slug' => $brandData['slug'],

@@ -1,5 +1,5 @@
 @php
-    {{--  Wishlist Count (real data only) --}}
+    // Wishlist Count (real data only)
     $wishlistCount = 0;
     if (auth('customer')->check()) {
         $wishlistCount = auth('customer')->user()->wishlistProducts()->count();

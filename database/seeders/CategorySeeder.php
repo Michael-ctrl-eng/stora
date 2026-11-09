@@ -142,12 +142,8 @@ class CategorySeeder extends Seeder
                     ]
                 );
 
-                // Copy the bundled category image into the public storage disk
-                $source = public_path('images/categories/'.$categoryData['image']);
-                $localPath = 'categories/'.$categoryData['image'];
-                if (is_file($source)) {
-                    Storage::disk('public')->put($localPath, file_get_contents($source));
-                }
+                // Reference the bundled category image directly from public/images (served as a static asset — no symlink needed)
+                $localPath = 'images/categories/'.$categoryData['image'];
 
                 foreach ($languages as $lang) {
                     $translation = $categoryData['translations'][$lang] ?? $categoryData['translations']['en'];

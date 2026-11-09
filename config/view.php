@@ -28,15 +28,14 @@ return [
     |
     */
 
-    /*'compiled' => env(
-        'VIEW_COMPILED_PATH',
-        realpath(storage_path('framework/views'))
-    ),*/
-
     'paths' => [
         resource_path('views/themes/'.env('APP_THEME', 'xylo')),
         resource_path('views'),
     ],
-    'compiled' => realpath(storage_path('framework/views')),
+
+    'compiled' => env(
+        'VIEW_COMPILED_PATH',
+        realpath(storage_path('framework/views'))
+    ),
 
 ];

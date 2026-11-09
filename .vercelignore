@@ -1,0 +1,15 @@
+# Dependencies are installed by the vercel-php runtime during build
+/vendor
+/node_modules
+
+# VCS & IDE
+/.git
+/.github
+/.idea
+/.vscode
+
+# Not needed inside the deployment bundle
+/tests
+/phpunit.xml
+/docs
+/.vercel

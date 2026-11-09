@@ -45,9 +45,9 @@
     @endif
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    @if (!App::environment('testing'))
-        @vite(['resources/views/themes/xylo/js/slick.min.js'])
-    @endif
+    {{-- slick as a classic script: it must register on the global jQuery
+         synchronously, before the inline carousel initialisation below --}}
+    <script src="{{ asset('js/slick.min.js') }}"></script>
     @if (!App::environment('testing'))
         @vite(['resources/views/themes/xylo/js/main.js'])
     @endif

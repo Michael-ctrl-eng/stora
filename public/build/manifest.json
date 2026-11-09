@@ -1,0 +1,61 @@
+{
+  "resources/js/app.js": {
+    "file": "assets/app-u0X6cXJA.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-bYnb39HD.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/css/animate.min.css": {
+    "file": "assets/animate-BnB_Ifri.css",
+    "src": "resources/views/themes/xylo/css/animate.min.css",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/css/apple.css": {
+    "file": "assets/apple-LdM_hNNz.css",
+    "src": "resources/views/themes/xylo/css/apple.css",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/css/custom.css": {
+    "file": "assets/custom-BPDz0hLs.css",
+    "src": "resources/views/themes/xylo/css/custom.css",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/css/slick.css": {
+    "file": "assets/slick-CbWFAYwR.css",
+    "src": "resources/views/themes/xylo/css/slick.css",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/css/style.css": {
+    "file": "assets/style-DKskoPGp.css",
+    "src": "resources/views/themes/xylo/css/style.css",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/js/app.js": {
+    "file": "assets/app-jFvq6utn.js",
+    "name": "app",
+    "src": "resources/views/themes/xylo/js/app.js",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/js/main.js": {
+    "file": "assets/main-BiIIqLAv.js",
+    "name": "main",
+    "src": "resources/views/themes/xylo/js/main.js",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/js/slick.min.js": {
+    "file": "assets/slick.min-C6idbfyY.js",
+    "name": "slick.min",
+    "src": "resources/views/themes/xylo/js/slick.min.js",
+    "isEntry": true
+  },
+  "resources/views/themes/xylo/sass/app.scss": {
+    "file": "assets/app-DKZBTmtA.css",
+    "src": "resources/views/themes/xylo/sass/app.scss",
+    "isEntry": true
+  }
+}
