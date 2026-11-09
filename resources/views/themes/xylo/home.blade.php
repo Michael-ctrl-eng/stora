@@ -8,14 +8,10 @@
             <div>
                 <div class="row h-100 align-items-center">
                     <div class="col-md-6">
-                        <h1 class="mt-5"><span>{{ $banner->translation ? $banner->translation->title : $banner->title }}</span>
+                        <h1><span>{{ $banner->translation ? $banner->translation->title : $banner->title }}</span>
                         </h1>
                         <p class="mt-3 mb-4">{{ __('store.home.banner_text') }}</p>
                        <a href="{{ route('shop.index') }}" class="btn btn-primary">{{ __('store.home.shop_now') }}</a>
-
-                        <div class="mt-5">
-                            <img src="assets/images/slide-smallimages.png" alt="" style="width: 200px;">
-                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="rightimg-banner rightimg-banner1">
@@ -106,7 +102,7 @@
 
 
     <section class="sale-banner pt-5 pb-5 animate-on-scroll">
-        <img src="assets/images/homesale-banner.png" alt="">
+        <img src="{{ asset('images/banners/promo-lineup.jpg') }}" alt="Stora product lineup">
     </section>
 
     <section class="products-home py-5 animate-on-scroll">
@@ -239,7 +235,9 @@
 
         function updateCartCount(cart) {
             let totalCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById("cart-count").textContent = totalCount;
+            let badge = document.getElementById("cart-count");
+            badge.textContent = totalCount;
+            badge.classList.toggle('d-none', totalCount === 0);
         }
 </script>
 

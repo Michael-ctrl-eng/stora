@@ -169,7 +169,9 @@ function addToCart(productId) {
 
 function updateCartCount(cart) {
     let totalCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById("cart-count").textContent = totalCount;
+    let badge = document.getElementById("cart-count");
+    badge.textContent = totalCount;
+    badge.classList.toggle('d-none', totalCount === 0);
 }
 </script>
 @endsection

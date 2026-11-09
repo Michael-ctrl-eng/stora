@@ -2,7 +2,7 @@
 
 return [
     'auth' => [
-        'velstore' => 'ول‌استور',
+        'stora' => 'استورا',
         'login' => 'ورود',
         'email' => 'آدرس ایمیل',
         'password' => 'رمز عبور',

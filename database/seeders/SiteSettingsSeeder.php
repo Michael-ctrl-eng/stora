@@ -15,17 +15,17 @@ class SiteSettingsSeeder extends Seeder
     public function run()
     {
         DB::table('site_settings')->insert([
-            'site_name' => 'My Awesome Laravel Site',
-            'tagline' => 'Building the future of web development',
-            'meta_title' => 'My Awesome Laravel Site - Home',
-            'meta_description' => 'Welcome to My Awesome Laravel Site, the place for all your web development needs.',
-            'meta_keywords' => 'laravel, web development, awesome site',
-            'logo' => 'path_to_logo.png',
+            'site_name' => 'Stora',
+            'tagline' => 'Everything you love. In one place.',
+            'meta_title' => 'Stora - Premium Online Store',
+            'meta_description' => 'Stora is your destination for premium tech, audio, wearables and fashion — carefully curated, beautifully simple.',
+            'meta_keywords' => 'stora, online store, electronics, audio, wearables, fashion',
+            'logo' => 'images/logo.png',
             'favicon' => 'favicon.ico',
-            'contact_email' => 'contact@myawesomelarsite.com',
+            'contact_email' => 'hello@stora.store',
             'contact_phone' => '+1 234 567 890',
-            'address' => '123 Laravel St, Web City, Webland',
-            'footer_text' => '© 2025 My Awesome Laravel Site. All rights reserved.',
+            'address' => '1 Stora Way, Commerce City, Webland',
+            'footer_text' => '© 2026 Stora. All rights reserved.',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

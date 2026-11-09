@@ -2,7 +2,7 @@
 
 return [
     'auth' => [
-        'velstore' => '벨스토어',
+        'stora' => '스토라',
         'login' => '로그인',
         'email' => '이메일 주소',
         'password' => '비밀번호',

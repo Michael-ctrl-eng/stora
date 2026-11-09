@@ -21,9 +21,9 @@ class BannerSeeder extends Seeder
                     'type' => 'promotion',
                     'status' => 1,
                     'translations' => [
-                        'title' => 'Ready to Shop',
-                        'description' => 'Your one-stop shop for everything you need.',
-                        'image' => 'https://i.postimg.cc/sxpYkSgk/shoes-ready.png',
+                        'title' => 'Ready to Shop.',
+                        'description' => 'Curated tech, audio and everyday essentials — beautifully simple.',
+                        'image' => 'stora-hero.jpg',
                     ],
                 ],
             ];
@@ -35,27 +35,25 @@ class BannerSeeder extends Seeder
                     'status' => $item['status'],
                 ]);
 
+                // Copy the bundled hero image into the public storage disk
+                $source = public_path('images/banners/'.$item['translations']['image']);
+                $localPath = 'banners/'.$item['translations']['image'];
+                if (is_file($source)) {
+                    Storage::disk('public')->put($localPath, file_get_contents($source));
+                }
+
                 foreach ($languages as $lang) {
-                    $imageUrl = $item['translations']['image'];
-                    $imageName = basename($imageUrl);
-
-                    try {
-                        $imageContents = file_get_contents($imageUrl);
-                        $localPath = 'banners/'.$imageName;
-                        Storage::disk('public')->put($localPath, $imageContents);
-                    } catch (\Exception $e) {
-                        $localPath = $imageUrl;
-                    }
-
                     $translatedTitle = match ($lang->code) {
-                        'es' => 'Listo para comprar',
-                        'de' => 'Bereit zum Einkaufen',
+                        'es' => 'Listo para comprar.',
+                        'de' => 'Bereit zum Einkaufen.',
+                        'fr' => 'Prêt à magasiner.',
                         default => $item['translations']['title'],
                     };
 
                     $translatedDescription = match ($lang->code) {
-                        'es' => 'Tu tienda única para todo lo que necesitas.',
-                        'de' => 'Ihr One-Stop-Shop für alles, was Sie brauchen.',
+                        'es' => 'Tecnología, audio y esenciales cuidadosamente seleccionados — bello y simple.',
+                        'de' => 'Sorgfältig kuratierte Technik, Audio und Essentials — schön einfach.',
+                        'fr' => 'Tech, audio et essentiels soigneusement sélectionnés — beau et simple.',
                         default => $item['translations']['description'],
                     };
 

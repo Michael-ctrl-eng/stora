@@ -1,63 +1,50 @@
-<header>
+@php
+    {{--  Wishlist Count (real data only) --}}
+    $wishlistCount = 0;
+    if (auth('customer')->check()) {
+        $wishlistCount = auth('customer')->user()->wishlistProducts()->count();
+    }
+    $cartCount = session('cart') ? collect(session('cart'))->sum('quantity') : 0;
+@endphp
 
-     {{--  Wishlist Count --}}
-    @php
-        $wishlistCount = 0;
-        if (auth('customer')->check()) {
-            $wishlistCount = auth('customer')->user()->wishlistProducts()->count();
-        }
-    @endphp
+<header class="apple-globalnav-wrap" id="appleGlobalNav">
+    <nav class="apple-globalnav" aria-label="{{ __('store.header.search_placeholder') ? 'Global' : 'Global' }}">
+        <div class="apple-globalnav-content">
 
-    <div class="top-bar w-100 bg-light py-1 header-top-bar">
-        <div class="text-center small">
-            {{ __('store.header.top_bar_message') }} 
-        </div>
-    </div>  
+            {{-- Mobile menu toggle --}}
+            <button class="apple-globalnav-menubtn d-lg-none" id="appleMenuBtn" type="button" aria-label="Menu" aria-expanded="false">
+                <span class="apple-globalnav-menubtn-bar"></span>
+            </button>
 
-    <div class="container py-3">
-        <!-- Row 2: Logo Left / Search Right -->
-        <div class="row align-items-center">
-            <div class="col-md-4 col-6">
-                <a href="{{ route('xylo.home') }}" class="navbar-brand">
-                    <img src="https://i.ibb.co/dHx2ZR3/velstore.png" width="80" alt="Logo" />
-                </a>
-            </div>
-            <div class="col-md-8 col-6 text-end">
-                <form class="d-flex justify-content-end" action="{{ url('/search') }}" method="GET">
-                    <div class="input-group search-input-width">
-                        <input type="text" class="form-control" id="search-input"  name="q" placeholder="{{ __('store.header.search_placeholder') }}">
-                        <button type="submit" class="btn btn-outline-secondary search-style"><i class="fa fa-search"></i></button>
-                        <div id="search-suggestions" class="dropdown-menu show w-100 mt-5 d-none"></div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+            {{-- Logo --}}
+            <a href="{{ route('xylo.home') }}" class="apple-globalnav-logo" aria-label="Stora">
+                <img src="{{ asset('images/logo.png') }}" alt="Stora"/>
+            </a>
 
-    <div class="container py-3">
-        <!-- Row 3: Menu Left / Actions Right -->
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <nav>
-                    <ul class="nav">
-                        @if ($headerMenu && $headerMenu->menuItems->count())
-                            @foreach ($headerMenu->menuItems as $menuItem)
-                                <li class="nav-item">
-                                    <a class="nav-link menu-text-color" href="{{ url($menuItem->slug) }}">
-                                        {{ $menuItem->translation->title ?? 'No Translation' }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        @endif
-                    </ul>
-                </nav>
-            </div>
+            {{-- Centered nav links (Apple style) --}}
+            <ul class="apple-globalnav-list d-none d-lg-flex">
+                @if ($headerMenu && $headerMenu->menuItems->count())
+                    @foreach ($headerMenu->menuItems as $menuItem)
+                        <li class="apple-globalnav-item">
+                            <a href="{{ url($menuItem->slug) }}" class="apple-globalnav-link">
+                                {{ $menuItem->translation->title ?? 'No Translation' }}
+                            </a>
+                        </li>
+                    @endforeach
+                @endif
+            </ul>
 
-            <div class="col-md-4 d-flex justify-content-end align-items-center gap-3">
-                <!-- Language Selector -->
-                <form action="{{ route('change.store.language') }}" method="POST">
+            {{-- Actions: search · language · currency · wishlist · account · bag --}}
+            <div class="apple-globalnav-actions">
+
+                <button class="apple-globalnav-action" id="appleSearchBtn" type="button" aria-label="{{ __('store.header.search_placeholder') }}">
+                    <i class="fa fa-search"></i>
+                </button>
+
+                {{-- Language (desktop) --}}
+                <form action="{{ route('change.store.language') }}" method="POST" class="d-none d-md-inline-block">
                     @csrf
-                    <select name="lang" class="form-select form-select-sm font-style" onchange="this.form.submit()">
+                    <select name="lang" class="apple-mini-select" onchange="this.form.submit()" aria-label="Language">
                         <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>EN</option>
                         <option value="fr" {{ app()->getLocale() == 'fr' ? 'selected' : '' }}>FR</option>
                         <option value="es" {{ app()->getLocale() == 'es' ? 'selected' : '' }}>ES</option>
@@ -65,10 +52,10 @@
                     </select>
                 </form>
 
-                <!-- Currency Selector -->
-                <form action="{{ route('change.currency') }}" method="POST">
+                {{-- Currency (desktop) --}}
+                <form action="{{ route('change.currency') }}" method="POST" class="d-none d-lg-inline-block">
                     @csrf
-                    <select name="currency_code" class="form-select form-select-sm font-style" onchange="this.form.submit()">
+                    <select name="currency_code" class="apple-mini-select" onchange="this.form.submit()" aria-label="Currency">
                         @foreach (\App\Models\Currency::all() as $currency)
                             <option value="{{ $currency->code }}" {{ session('currency', 'USD') == $currency->code ? 'selected' : '' }}>
                                 {{ strtoupper($currency->code) }}
@@ -77,40 +64,29 @@
                     </select>
                 </form>
 
-                <!-- Wishlist Icon -->
-                 <a href="{{ auth('customer')->check() ? route('customer.wishlist.index') : route('customer.login') }}" class="text-dark position-relative homepage-icon">
+                {{-- Wishlist --}}
+                <a href="{{ auth('customer')->check() ? route('customer.wishlist.index') : route('customer.login') }}"
+                   class="apple-globalnav-action apple-globalnav-bag" aria-label="{{ __('store.footer.wishlist') }}">
                     <i class="fa-regular fa-heart"></i>
-
-                    @if($wishlistCount > 0)
-                        <span id="wishlist-count"
-                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ $wishlistCount }}
-                        </span>
+                    @if ($wishlistCount > 0)
+                        <span class="apple-nav-badge">{{ $wishlistCount }}</span>
                     @endif
                 </a>
 
-                 <!-- Account Icon -->
-                <a href="#" class="text-dark dropdown-toggle homepage-icon" data-bs-toggle="dropdown">
+                {{-- Account --}}
+                <a href="#" class="apple-globalnav-action dropdown-toggle apple-globalnav-account" data-bs-toggle="dropdown" aria-label="{{ __('store.footer.my_account') }}">
                     @auth('customer')
-                        @php
-                            $customer = Auth::guard('customer')->user();
-                        @endphp
+                        @php $customer = Auth::guard('customer')->user(); @endphp
                         @if($customer->profile_image)
-                            <img src="{{ asset('storage/' . $customer->profile_image) }}" 
-                                alt="Profile" 
-                                class="rounded-circle" 
-                                style="width:32px; height:32px; object-fit:cover;">
+                            <img src="{{ asset('storage/' . $customer->profile_image) }}" alt="Profile" class="apple-nav-avatar">
                         @else
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode($customer->name) }}" 
-                                alt="Avatar" 
-                                class="rounded-circle" 
-                                style="width:32px; height:32px; object-fit:cover;">
+                            <i class="fa-regular fa-user"></i>
                         @endif
                     @else
                         <i class="fa-regular fa-user"></i>
                     @endauth
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end p-2">
+                <ul class="dropdown-menu dropdown-menu-end apple-account-menu">
                     @guest('customer')
                         <li><a class="dropdown-item" href="{{ route('customer.login') }}">Sign In</a></li>
                         <li><a class="dropdown-item" href="{{ route('customer.register') }}">Sign Up</a></li>
@@ -118,8 +94,8 @@
                         <li><a class="dropdown-item" href="{{ route('customer.profile.edit') }}">My Profile</a></li>
                         <li>
                             <a class="dropdown-item" href="{{ route('customer.logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('customer-logout-form').submit();">
-                            Logout
+                               onclick="event.preventDefault(); document.getElementById('customer-logout-form').submit();">
+                                Logout
                             </a>
                             <form id="customer-logout-form" action="{{ route('customer.logout') }}" method="POST" class="d-none">
                                 @csrf
@@ -128,14 +104,123 @@
                     @endguest
                 </ul>
 
-                <!-- Cart Icon -->
-                <a href="{{ route('cart.view') }}" class="text-dark position-relative homepage-icon">
+                {{-- Bag / Cart --}}
+                <a href="{{ route('cart.view') }}" class="apple-globalnav-action apple-globalnav-bag" aria-label="Bag">
                     <i class="fa fa-shopping-bag"></i>
-                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ session('cart') ? collect(session('cart'))->sum('quantity') : 0 }}
-                    </span>
+                    <span id="cart-count" class="apple-nav-badge {{ $cartCount > 0 ? '' : 'd-none' }}">{{ $cartCount }}</span>
                 </a>
             </div>
         </div>
+    </nav>
+
+    {{-- Search panel (Apple style, slides under the nav) --}}
+    <div class="apple-searchpanel" id="appleSearchPanel">
+        <div class="apple-searchpanel-inner">
+            <form action="{{ url('/search') }}" method="GET" class="apple-searchform" autocomplete="off">
+                <i class="fa fa-search apple-searchform-icon"></i>
+                <input type="text" id="search-input" name="q" placeholder="{{ __('store.header.search_placeholder') }}">
+                <div id="search-suggestions" class="apple-searchsuggestions d-none"></div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Mobile menu panel (Apple style frosted dropdown) --}}
+    <div class="apple-mobilemenu" id="appleMobileMenu">
+        <ul class="apple-mobilemenu-list">
+            @if ($headerMenu && $headerMenu->menuItems->count())
+                @foreach ($headerMenu->menuItems as $menuItem)
+                    <li>
+                        <a href="{{ url($menuItem->slug) }}" class="apple-mobilemenu-link">
+                            {{ $menuItem->translation->title ?? 'No Translation' }}
+                        </a>
+                    </li>
+                @endforeach
+            @endif
+            <li class="apple-mobilemenu-divider"></li>
+            <li class="apple-mobilemenu-extras">
+                <form action="{{ route('change.store.language') }}" method="POST" class="d-flex align-items-center gap-2">
+                    @csrf
+                    <select name="lang" class="apple-mini-select w-auto" onchange="this.form.submit()" aria-label="Language">
+                        <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>EN</option>
+                        <option value="fr" {{ app()->getLocale() == 'fr' ? 'selected' : '' }}>FR</option>
+                        <option value="es" {{ app()->getLocale() == 'es' ? 'selected' : '' }}>ES</option>
+                        <option value="de" {{ app()->getLocale() == 'de' ? 'selected' : '' }}>DE</option>
+                    </select>
+                </form>
+                <form action="{{ route('change.currency') }}" method="POST" class="d-flex align-items-center gap-2">
+                    @csrf
+                    <select name="currency_code" class="apple-mini-select w-auto" onchange="this.form.submit()" aria-label="Currency">
+                        @foreach (\App\Models\Currency::all() as $currency)
+                            <option value="{{ $currency->code }}" {{ session('currency', 'USD') == $currency->code ? 'selected' : '' }}>
+                                {{ strtoupper($currency->code) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </li>
+        </ul>
     </div>
 </header>
+
+{{-- Promo strip (Apple-style ribbon under the nav) --}}
+<div class="apple-promo">
+    <p>{{ __('store.header.top_bar_message') }}</p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var nav = document.getElementById('appleGlobalNav');
+        var searchBtn = document.getElementById('appleSearchBtn');
+        var searchPanel = document.getElementById('appleSearchPanel');
+        var menuBtn = document.getElementById('appleMenuBtn');
+        var mobileMenu = document.getElementById('appleMobileMenu');
+
+        function closeAll() {
+            searchPanel.classList.remove('open');
+            nav.classList.remove('search-open');
+            mobileMenu.classList.remove('open');
+            menuBtn.classList.remove('active');
+            menuBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        if (searchBtn && searchPanel) {
+            searchBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var isOpen = searchPanel.classList.contains('open');
+                closeAll();
+                if (!isOpen) {
+                    searchPanel.classList.add('open');
+                    nav.classList.add('search-open');
+                    var input = searchPanel.querySelector('#search-input');
+                    if (input) input.focus();
+                }
+            });
+        }
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var isOpen = mobileMenu.classList.contains('open');
+                closeAll();
+                if (!isOpen) {
+                    mobileMenu.classList.add('open');
+                    menuBtn.classList.add('active');
+                    menuBtn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!nav.contains(e.target)) closeAll();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeAll();
+        });
+
+        var mobileLinks = mobileMenu ? mobileMenu.querySelectorAll('a') : [];
+        mobileLinks.forEach(function (link) {
+            link.addEventListener('click', closeAll);
+        });
+    });
+</script>

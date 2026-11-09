@@ -21,11 +21,11 @@ class CategorySeeder extends Seeder
                     'slug' => 'electronics',
                     'parent_slug' => null,
                     'translations' => [
-                        'en' => ['name' => 'Electronics', 'description' => 'Electronic devices'],
-                        'fr' => ['name' => 'Électronique', 'description' => 'Appareils électroniques'],
-                        'es' => ['name' => 'Electrónica', 'description' => 'Dispositivos electrónicos'],
+                        'en' => ['name' => 'Electronics', 'description' => 'Devices for work, play and everything between'],
+                        'fr' => ['name' => 'Électronique', 'description' => 'Appareils pour le travail, le jeu et tout le reste'],
+                        'es' => ['name' => 'Electrónica', 'description' => 'Dispositivos para trabajar, jugar y todo lo demás'],
                     ],
-                    'image' => 'https://i.postimg.cc/mgTTQWtW/07-300x300-1-1-removebg-preview.png',
+                    'image' => 'electronics.jpg',
                 ],
                 [
                     'slug' => 'fashion',
@@ -35,7 +35,7 @@ class CategorySeeder extends Seeder
                         'fr' => ['name' => 'Mode', 'description' => 'Vêtements et accessoires'],
                         'es' => ['name' => 'Moda', 'description' => 'Ropa y accesorios'],
                     ],
-                    'image' => 'https://i.postimg.cc/QM9NMkFF/cat7-removebg-preview.png',
+                    'image' => 'fashion.jpg',
                 ],
                 [
                     'slug' => 'smartphones',
@@ -45,7 +45,57 @@ class CategorySeeder extends Seeder
                         'fr' => ['name' => 'Smartphones', 'description' => 'Derniers téléphones mobiles'],
                         'es' => ['name' => 'Smartphones', 'description' => 'Últimos teléfonos móviles'],
                     ],
-                    'image' => 'https://i.postimg.cc/ZKwJFD39/cat1-removebg-preview.png',
+                    'image' => 'smartphones.jpg',
+                ],
+                [
+                    'slug' => 'audio',
+                    'parent_slug' => 'electronics',
+                    'translations' => [
+                        'en' => ['name' => 'Audio', 'description' => 'Headphones, earbuds and speakers'],
+                        'fr' => ['name' => 'Audio', 'description' => 'Casques, écouteurs et enceintes'],
+                        'es' => ['name' => 'Audio', 'description' => 'Auriculares, audífonos y altavoces'],
+                    ],
+                    'image' => 'audio.jpg',
+                ],
+                [
+                    'slug' => 'wearables',
+                    'parent_slug' => 'electronics',
+                    'translations' => [
+                        'en' => ['name' => 'Wearables', 'description' => 'Smartwatches and fitness trackers'],
+                        'fr' => ['name' => 'Objets connectés', 'description' => 'Montres connectées et traqueurs'],
+                        'es' => ['name' => 'Vestibles', 'description' => 'Relojes inteligentes y pulseras'],
+                    ],
+                    'image' => 'wearables.jpg',
+                ],
+                [
+                    'slug' => 'laptops',
+                    'parent_slug' => 'electronics',
+                    'translations' => [
+                        'en' => ['name' => 'Laptops', 'description' => 'Notebooks for every kind of work'],
+                        'fr' => ['name' => 'Ordinateurs portables', 'description' => 'Ordinateurs pour chaque usage'],
+                        'es' => ['name' => 'Portátiles', 'description' => 'Portátiles para cada tipo de trabajo'],
+                    ],
+                    'image' => 'laptops.jpg',
+                ],
+                [
+                    'slug' => 'tablets',
+                    'parent_slug' => 'electronics',
+                    'translations' => [
+                        'en' => ['name' => 'Tablets', 'description' => 'Light, bright and endlessly useful'],
+                        'fr' => ['name' => 'Tablettes', 'description' => 'Légères, lumineuses et utiles'],
+                        'es' => ['name' => 'Tablets', 'description' => 'Ligeras, brillantes y muy útiles'],
+                    ],
+                    'image' => 'tablets.jpg',
+                ],
+                [
+                    'slug' => 'cameras',
+                    'parent_slug' => 'electronics',
+                    'translations' => [
+                        'en' => ['name' => 'Cameras', 'description' => 'DSLR, mirrorless and everything optical'],
+                        'fr' => ['name' => 'Appareils photo', 'description' => 'Reflex, hybrides et plus'],
+                        'es' => ['name' => 'Cámaras', 'description' => 'Réflex, sin espejo y todo lo óptico'],
+                    ],
+                    'image' => 'cameras.jpg',
                 ],
                 [
                     'slug' => 't-shirts',
@@ -55,7 +105,27 @@ class CategorySeeder extends Seeder
                         'fr' => ['name' => 'T-shirts', 'description' => 'T-shirts décontractés'],
                         'es' => ['name' => 'Camisetas', 'description' => 'Camisetas informales'],
                     ],
-                    'image' => 'https://i.postimg.cc/VkSP9smT/cat2-removebg-preview.png',
+                    'image' => 't-shirts.jpg',
+                ],
+                [
+                    'slug' => 'sneakers',
+                    'parent_slug' => 'fashion',
+                    'translations' => [
+                        'en' => ['name' => 'Sneakers', 'description' => 'Everyday kicks, elevated'],
+                        'fr' => ['name' => 'Baskets', 'description' => 'Des baskets pour chaque jour'],
+                        'es' => ['name' => 'Zapatillas', 'description' => 'Zapatillas para cada día'],
+                    ],
+                    'image' => 'sneakers.jpg',
+                ],
+                [
+                    'slug' => 'accessories',
+                    'parent_slug' => 'fashion',
+                    'translations' => [
+                        'en' => ['name' => 'Accessories', 'description' => 'Bags, eyewear and the perfect finish'],
+                        'fr' => ['name' => 'Accessoires', 'description' => 'Sacs, lunettes et la touche finale'],
+                        'es' => ['name' => 'Accesorios', 'description' => 'Bolsos, gafas y el acabado perfecto'],
+                    ],
+                    'image' => 'accessories.jpg',
                 ],
             ];
 
@@ -72,15 +142,11 @@ class CategorySeeder extends Seeder
                     ]
                 );
 
-                $imageUrl = $categoryData['image'];
-                $imageName = basename($imageUrl);
-
-                try {
-                    $imageContents = file_get_contents($imageUrl);
-                    $localPath = 'categories/'.$imageName;
-                    Storage::disk('public')->put($localPath, $imageContents);
-                } catch (\Exception $e) {
-                    $localPath = $imageUrl;
+                // Copy the bundled category image into the public storage disk
+                $source = public_path('images/categories/'.$categoryData['image']);
+                $localPath = 'categories/'.$categoryData['image'];
+                if (is_file($source)) {
+                    Storage::disk('public')->put($localPath, file_get_contents($source));
                 }
 
                 foreach ($languages as $lang) {

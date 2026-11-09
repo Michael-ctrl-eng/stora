@@ -76,19 +76,19 @@ class DataImport extends Command
         );
 
         $shop = Shop::firstOrCreate(
-            ['name' => 'Soft Shoes'],
+            ['name' => 'Stora'],
             [
                 'vendor_id' => 1,
-                'name' => 'Soft Shoes',
-                'logo' => 'N/A',
-                'description' => 'Luxurious comfort in every step. Crafted with premium materials for a soft, stylish, and effortless walking experience. ',
+                'name' => 'Stora',
+                'logo' => 'images/logo.png',
+                'description' => 'Curated tech, audio and everyday essentials — beautifully simple. Stora is home to the brands and products you love.',
             ]
         );
 
         StoreSetting::insert([
             ['key' => 'default_currency', 'value' => 'USD'],
-            ['key' => 'meta_title', 'value' => 'Welcome to Velstore - Your Laravel eCommerce Journey Begins!'],
-            ['key' => 'meta_description', 'value' => 'Welcome to Velstore! You have successfully installed the ultimate Laravel eCommerce boilerplate. Set up your store, configure settings, and start selling with a powerful multi-vendor, multilingual platform.'],
+            ['key' => 'meta_title', 'value' => 'Stora - Everything you love. In one place.'],
+            ['key' => 'meta_description', 'value' => 'Stora is your destination for premium tech, audio, wearables and fashion — carefully curated, beautifully simple.'],
             ['key' => 'phone_number', 'value' => '+1 234 567 890'],
         ]);
     }
