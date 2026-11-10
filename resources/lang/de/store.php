@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Kostenloser Versand bei Bestellungen über 50 $ | Support | Filialfinder',
-        'search_placeholder' => 'Suche nach einem Produkt',
+        'search_placeholder' => 'Auf Stora suchen',
+        'search_quick_links' => 'Schnelllinks',
+        'search_cancel' => 'Abbrechen',
     ],
 
     'footer' => [

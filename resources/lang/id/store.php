@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Pengiriman gratis untuk pesanan lebih dari $50 | Dukungan | Pencari Toko',
-        'search_placeholder' => 'Cari produk',
+        'search_placeholder' => 'Cari di Stora',
+        'search_quick_links' => 'Tautan cepat',
+        'search_cancel' => 'Batal',
     ],
 
     'footer' => [

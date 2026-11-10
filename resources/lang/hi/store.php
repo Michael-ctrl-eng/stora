@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => '50 डॉलर से ऊपर के ऑर्डर पर मुफ्त शिपिंग | सहायता | स्टोर लोकेटर',
-        'search_placeholder' => 'एक उत्पाद खोजें',
+        'search_placeholder' => 'Stora पर खोजें',
+        'search_quick_links' => 'त्वरित लिंक',
+        'search_cancel' => 'रद्द करें',
     ],
 
     'footer' => [

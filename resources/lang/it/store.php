@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Spedizione gratuita per ordini superiori a $50 | Supporto | Trova negozi',
-        'search_placeholder' => 'Cerca un prodotto',
+        'search_placeholder' => 'Cerca su Stora',
+        'search_quick_links' => 'Link veloci',
+        'search_cancel' => 'Annulla',
     ],
 
     'footer' => [

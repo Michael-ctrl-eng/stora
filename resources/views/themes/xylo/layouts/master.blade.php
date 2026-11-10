@@ -328,6 +328,7 @@
 
             function renderRows(products, query) {
                 var sug = $('#search-suggestions');
+                $('#searchQuicklinks').addClass('d-none');
                 var html = '';
                 products.forEach(function (p) {
                     var priceHtml = '';
@@ -350,6 +351,7 @@
 
             function renderStatus(text, query, showAll) {
                 var sug = $('#search-suggestions');
+                $('#searchQuicklinks').addClass('d-none');
                 var html = '<div class="s-status">' + esc(text) + '</div>';
                 if (showAll && query) {
                     html += '<a href="/search?q=' + encodeURIComponent(query) + '" class="s-all">'
@@ -362,6 +364,8 @@
 
             function hide() {
                 $('#search-suggestions').addClass('d-none').html('');
+                /* Empty field again → back to Apple-style Quick Links */
+                $('#searchQuicklinks').removeClass('d-none');
                 activeIndex = -1;
             }
 

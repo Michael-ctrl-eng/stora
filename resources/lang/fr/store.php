@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Livraison gratuite pour les commandes de plus de 50 $ | Support | Localisateur de magasins',
-        'search_placeholder' => 'Rechercher un produit',
+        'search_placeholder' => 'Rechercher sur Stora',
+        'search_quick_links' => 'Liens rapides',
+        'search_cancel' => 'Annuler',
     ],
 
     'footer' => [

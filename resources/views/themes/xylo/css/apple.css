@@ -142,6 +142,9 @@ a:hover { color: var(--ap-link); }
 }
 
 .apple-globalnav-content {
+    position: relative;
+    flex: 1 1 auto;
+    width: 100%;
     max-width: 1200px;
     height: 100%;
     margin: 0 auto;
@@ -208,6 +211,36 @@ a:hover { color: var(--ap-link); }
 }
 .apple-globalnav-action:hover { color: #000 !important; }
 .apple-globalnav-action::after { display: none; }
+
+/* Search trigger — Apple's 44px-tall hit area with the exact apple.com glyph */
+.apple-globalnav-searchbtn {
+    width: 44px;
+    height: var(--ap-nav-h);
+    border-radius: 8px;
+}
+.apple-globalnav-searchbtn svg {
+    display: block;
+    transition: transform 0.25s var(--ap-ease);
+}
+.apple-globalnav-searchbtn:hover svg { transform: scale(1.12); }
+
+/* When search opens, the nav content fades and gently shrinks (apple.com) */
+.apple-globalnav-logo,
+.apple-globalnav-list,
+.apple-globalnav-actions,
+.apple-globalnav-menubtn {
+    transition: opacity 0.28s var(--ap-ease), transform 0.28s var(--ap-ease);
+}
+.apple-globalnav-wrap.search-open .apple-globalnav-logo,
+.apple-globalnav-wrap.search-open .apple-globalnav-list,
+.apple-globalnav-wrap.search-open .apple-globalnav-actions,
+.apple-globalnav-wrap.search-open .apple-globalnav-menubtn {
+    opacity: 0;
+    transform: scale(0.97);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.28s var(--ap-ease), transform 0.28s var(--ap-ease), visibility 0s 0.28s;
+}
 
 .apple-nav-avatar {
     width: 22px;
@@ -296,74 +329,168 @@ a:hover { color: var(--ap-link); }
 }
 .apple-account-menu .dropdown-item:hover { background: var(--ap-canvas-alt); color: var(--ap-ink); }
 
-/* Search panel that slides under the nav */
-.apple-searchpanel {
-    display: none;
-    background: var(--ap-nav-glass);
-    -webkit-backdrop-filter: var(--ap-blur);
-    backdrop-filter: var(--ap-blur);
-    border-bottom: 1px solid var(--ap-hairline-soft);
-}
-.apple-searchpanel.open { display: block; }
-
-.apple-searchpanel-inner {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 14px 22px 18px;
-}
-
-.apple-searchform { position: relative; }
-.apple-searchform-icon {
+/* Apple-style search: the field expands inside the nav from the icon,
+   everything else fades out (mirrors apple.com's globalnav search). */
+.apple-nav-search {
     position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--ap-secondary);
-    font-size: 16px;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
+    gap: 12px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ap-ease), visibility 0s 0.3s;
+}
+.apple-globalnav-wrap.search-open .apple-nav-search {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.3s var(--ap-ease) 0.05s, visibility 0s 0s;
+}
+
+.apple-searchform {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 0;
+    height: 40px;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    border: 2px solid var(--ap-blue);
+    border-radius: 2px;
+    opacity: 0;
+    transition: max-width 0.45s var(--ap-ease) 0.05s, padding 0.45s var(--ap-ease) 0.05s, opacity 0.25s ease 0.1s;
+}
+.apple-globalnav-wrap.search-open .apple-searchform {
+    max-width: 980px;
+    padding: 0 14px;
+    opacity: 1;
+}
+
+.apple-searchform-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    color: var(--ap-tertiary);
     pointer-events: none;
 }
+
 .apple-searchform input {
-    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
     border: 0;
-    border-bottom: 1px solid var(--ap-hairline);
     background: transparent;
-    padding: 8px 4px 8px 28px;
-    font-size: 22px;
-    font-family: var(--ap-font-display);
-    letter-spacing: -0.02em;
+    padding: 0;
+    font-size: 24px;
+    font-family: var(--ap-font);
+    font-weight: 600;
+    letter-spacing: -0.016em;
     color: var(--ap-ink);
 }
-.apple-searchform input::placeholder { color: var(--ap-tertiary); }
-.apple-searchform input:focus { outline: none; border-bottom-color: var(--ap-ink); }
+/* ID-boosted: the base theme's input[type=text] border would otherwise
+   paint a stray 1px grey line at the field's right edge. */
+.apple-searchform input#search-input {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+}
+.apple-searchform input::placeholder { color: var(--ap-tertiary); font-weight: 400; }
+.apple-searchform input:focus { outline: none; }
+.apple-searchform input:focus-visible { outline: none; }
 
-.apple-searchsuggestions {
+/* Mobile "Cancel" (apple.com compact behaviour) */
+.apple-searchform-cancel {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    padding: 8px 2px 8px 6px;
+    font-size: 17px;
+    font-family: var(--ap-font);
+    letter-spacing: -0.01em;
+    color: var(--ap-link);
+    cursor: pointer;
+}
+.apple-searchform-cancel:hover { color: var(--ap-blue-hover); }
+
+/* Search results flyout — full-width frosted panel under the nav */
+.apple-search-drop {
     position: absolute;
-    top: calc(100% + 8px);
+    top: var(--ap-nav-h);
     left: 0;
     right: 0;
-    z-index: 20;
-    background: rgba(255, 255, 255, 0.96);
-    -webkit-backdrop-filter: var(--ap-blur);
-    backdrop-filter: var(--ap-blur);
-    border: 1px solid var(--ap-hairline-soft);
-    border-radius: var(--ap-radius-card);
-    box-shadow: var(--ap-shadow-panel);
-    padding: 8px;
+    z-index: 40;
+    display: none;
+    background: var(--ap-canvas);
+    border-top: 1px solid var(--ap-hairline-soft);
+    border-bottom: 1px solid var(--ap-hairline-soft);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.10);
+}
+.apple-search-drop.open {
+    display: block;
+    animation: apple-search-drop-in 0.28s var(--ap-ease);
+}
+@keyframes apple-search-drop-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+}
+
+.apple-search-drop-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4px 22px 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+.apple-search-drop-box { width: min(980px, 100%); }
+
+/* Quick Links (empty-state, exactly apple.com's pattern) */
+.s-ql-label {
+    margin: 16px 0 4px;
+    padding: 0 14px;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.006em;
+    color: var(--ap-tertiary);
+}
+.apple-search-quicklinks ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 8px;
+}
+.s-ql-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    font-size: 15px;
+    letter-spacing: -0.014em;
+    color: var(--ap-link);
+    text-decoration: none;
+}
+.s-ql-link:hover { color: var(--ap-link); text-decoration: underline; }
+.s-ql-link svg { flex: 0 0 auto; color: var(--ap-tertiary); }
+
+/* Instant-search rows (typing state) */
+.apple-searchsuggestions {
+    padding: 8px 0 2px;
     max-height: 60vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
 }
 .apple-searchsuggestions .dropdown-item,
 .apple-searchsuggestions a {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 10px;
-    border-radius: 10px;
-    font-size: 14px;
     color: var(--ap-ink);
 }
-.apple-searchsuggestions .dropdown-item:hover,
-.apple-searchsuggestions a:hover { background: var(--ap-canvas-alt); color: var(--ap-ink); }
 .apple-searchsuggestions img { border-radius: 8px; }
 
 /* Mobile menu (frosted dropdown) */
@@ -1811,19 +1938,21 @@ input[type="radio"]:checked + .color-circle {
 .pdp-gallery-thumb.slick-current img { border-color: var(--ap-blue); }
 
 /* ==========================================================================
-   15. INSTANT SEARCH DROPDOWN (Apple-grade type-ahead)
+   15. INSTANT SEARCH ROWS (Apple-grade type-ahead)
    ========================================================================== */
 .apple-searchsuggestions .s-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 10px;
-    border-radius: 10px;
-    font-size: 14px;
+    padding: 10px 14px;
+    font-size: 15px;
     color: var(--ap-ink);
     text-decoration: none;
     transition: background 0.15s ease;
 }
+.apple-searchsuggestions .s-item + .s-item,
+.apple-searchsuggestions .s-status + .s-item,
+.apple-searchsuggestions .s-item + .s-all { border-top: 1px solid var(--ap-hairline-soft); }
 .apple-searchsuggestions .s-item:hover,
 .apple-searchsuggestions .s-item.active {
     background: var(--ap-canvas-alt);
@@ -1831,8 +1960,8 @@ input[type="radio"]:checked + .color-circle {
 }
 .apple-searchsuggestions .s-thumb {
     flex: 0 0 auto;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     overflow: hidden;
     background: var(--ap-canvas-soft);
@@ -1855,12 +1984,13 @@ input[type="radio"]:checked + .color-circle {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    letter-spacing: -0.014em;
+    letter-spacing: -0.016em;
 }
 .apple-searchsuggestions .s-name mark {
     background: none;
     color: var(--ap-link);
     font-weight: 600;
+    padding: 0;
 }
 .apple-searchsuggestions .s-price {
     flex: 0 0 auto;
@@ -1876,19 +2006,19 @@ input[type="radio"]:checked + .color-circle {
 }
 .apple-searchsuggestions .s-all {
     display: block;
-    padding: 9px 10px 6px;
-    margin-top: 4px;
+    padding: 12px 14px;
+    margin-top: 2px;
     border-top: 1px solid var(--ap-hairline-soft);
-    font-size: 13px;
+    font-size: 14px;
     color: var(--ap-link);
     text-decoration: none;
     text-align: center;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.014em;
 }
 .apple-searchsuggestions .s-all:hover { text-decoration: underline; }
 .apple-searchsuggestions .s-status {
-    padding: 12px 10px;
-    font-size: 13px;
+    padding: 14px;
+    font-size: 14px;
     color: var(--ap-tertiary);
     text-align: center;
     letter-spacing: -0.01em;
@@ -1970,4 +2100,21 @@ input[type="radio"]:checked + .color-circle {
     max-width: 28px;
     display: inline-block;
     vertical-align: top;
+}
+
+/* ==========================================================================
+   17. SEARCH — responsive (apple.com compact behaviour)
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .apple-nav-search { padding: 0 10px; gap: 10px; }
+    .apple-search-drop-inner { padding: 2px 10px 12px; }
+}
+@media (max-width: 767.98px) {
+    .apple-searchform { height: 38px; }
+    .apple-searchform input { font-size: 21px; }
+    .apple-searchform-icon { width: 16px; height: 16px; }
+    .apple-searchform-cancel { font-size: 19px; }
+    .s-ql-link { font-size: 16px; padding: 10px 12px; }
+    .s-ql-label { padding: 0 12px; }
+    .apple-searchsuggestions .s-item { padding: 9px 12px; }
 }

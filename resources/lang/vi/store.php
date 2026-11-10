@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Miễn phí vận chuyển cho đơn hàng trên $50 | Hỗ trợ | Tìm cửa hàng',
-        'search_placeholder' => 'Tìm kiếm sản phẩm',
+        'search_placeholder' => 'Tìm kiếm trên Stora',
+        'search_quick_links' => 'Liên kết nhanh',
+        'search_cancel' => 'Hủy',
     ],
 
     'footer' => [

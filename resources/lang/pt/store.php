@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Frete grátis em pedidos acima de $50 | Suporte | Localizador de lojas',
-        'search_placeholder' => 'Buscar por um produto',
+        'search_placeholder' => 'Buscar na Stora',
+        'search_quick_links' => 'Links rápidos',
+        'search_cancel' => 'Cancelar',
     ],
 
     'footer' => [

@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'ارسال رایگان برای سفارشات بالای ۵۰ دلار | پشتیبانی | مکان‌یاب فروشگاه‌ها',
-        'search_placeholder' => 'جستجو برای یک محصول',
+        'search_placeholder' => 'جستجو در Stora',
+        'search_quick_links' => 'پیوندهای سریع',
+        'search_cancel' => 'لغو',
     ],
 
     'footer' => [

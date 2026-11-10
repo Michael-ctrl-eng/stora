@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Darmowa wysyłka przy zamówieniach powyżej 50 $ | Wsparcie | Lokalizator sklepów',
-        'search_placeholder' => 'Szukaj produktu',
+        'search_placeholder' => 'Szukaj na Stora',
+        'search_quick_links' => 'Szybkie linki',
+        'search_cancel' => 'Anuluj',
     ],
 
     'footer' => [

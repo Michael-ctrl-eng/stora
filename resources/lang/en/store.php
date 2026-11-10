@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Free shipping on orders over $50 | Support | Store Locator',
-        'search_placeholder' => 'Search for a product',
+        'search_placeholder' => 'Search Stora',
+        'search_quick_links' => 'Quick Links',
+        'search_cancel' => 'Cancel',
     ],
 
     'footer' => [

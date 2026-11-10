@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => 'Бесплатная доставка при заказах на сумму более $50 | Поддержка | Поиск магазинов',
-        'search_placeholder' => 'Поиск продукта',
+        'search_placeholder' => 'Поиск по Stora',
+        'search_quick_links' => 'Быстрые ссылки',
+        'search_cancel' => 'Отмена',
     ],
 
     'footer' => [

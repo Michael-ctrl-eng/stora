@@ -3,7 +3,9 @@
 return [
     'header' => [
         'top_bar_message' => '$50 üzeri siparişlerde ücretsiz kargo | Destek | Mağaza Bulucu',
-        'search_placeholder' => 'Ürün ara',
+        'search_placeholder' => 'Stora'da ara',
+        'search_quick_links' => 'Hızlı bağlantılar',
+        'search_cancel' => 'Vazgeç',
     ],
 
     'footer' => [
