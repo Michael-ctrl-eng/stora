@@ -38,6 +38,13 @@ return [
         'trusted_worldwide_text' => 'Thousands of satisfied customers, excellent reviews, and high ratings.',
         'ten_years_services_title' => '10 Years Services',
         'ten_years_services_text' => 'Over 10 years of trusted service delivering quality and satisfaction.',
+        // Search
+        'search_results_title' => 'Results for “:query”',
+        'search_results_count' => 'items found',
+        'search_empty_title' => 'No results found',
+        'search_empty_text' => 'We couldn’t find anything matching “:query”. Try a different search.',
+        'search_empty_cta' => 'Browse all products',
+        'search_view_all' => 'See all results for “:query”',
     ],
 
     'product_detail' => [

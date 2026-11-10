@@ -305,46 +305,130 @@
         });
     </script>
     <script>
-        /* product seach input */
-        $(document).ready(function () {
-            $('#search-input').on('keyup', function () {
-                let query = $(this).val();
-                if (query.length > 2) {
-                    $.ajax({
-                        url: '/search-suggestions',
-                        type: 'GET',
-                        data: { q: query },
-                        success: function (data) {
-                            let suggestions = $('#search-suggestions');
-                            suggestions.html('');
-                            if (data.length > 0) {
-                                data.forEach(product => {
-                                    suggestions.append(`
-                                        <a href="/product/${product.slug}" class="dropdown-item d-flex align-items-center">
-                                            <img src="${product.thumbnail}" alt="${product.name}" class="me-2" width="40" height="40" style="object-fit: cover; border-radius: 5px;" loading="lazy">
-                                            <span class="search-product-title">${product.name}</span>
-                                        </a>
-                                    `);
-                                });
-                                suggestions.removeClass('d-none');
-                            } else {
-                                suggestions.addClass('d-none');
+        /* Instant search — debounced type-ahead with keyboard navigation.
+           Rows are rendered from /search-suggestions JSON (name, price, thumbnail). */
+        (function () {
+            var DEBOUNCE_MS = 220;
+            var MIN_CHARS = 2;
+            var timer = null;
+            var activeIndex = -1;
+            var currentXHR = null;
+
+            function esc(s) {
+                return String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            function highlight(name, query) {
+                var safeName = esc(name);
+                var safeQuery = esc(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                return safeName.replace(new RegExp('(' + safeQuery + ')', 'ig'), '<mark>$1</mark>');
+            }
+
+            function renderRows(products, query) {
+                var sug = $('#search-suggestions');
+                var html = '';
+                products.forEach(function (p) {
+                    var priceHtml = '';
+                    if (p.price != null) {
+                        priceHtml = p.original_price
+                            ? '<span class="s-price"><s class="s-original">' + esc(p.original_price) + '</s>' + esc(p.price) + '</span>'
+                            : '<span class="s-price">' + esc(p.price) + '</span>';
+                    }
+                    html += '<a href="/product/' + esc(p.slug) + '" class="s-item" role="option">'
+                        + '<span class="s-thumb"><img src="' + esc(p.thumbnail) + '" alt="" width="40" height="40" loading="lazy" decoding="async"></span>'
+                        + '<span class="s-body"><span class="s-name">' + highlight(p.name, query) + '</span>' + priceHtml + '</span>'
+                        + '</a>';
+                });
+                html += '<a href="/search?q=' + encodeURIComponent(query) + '" class="s-all">'
+                    + '{{ __('store.home.search_view_all', ['query' => ':query']) }}'.replace(':query', esc(query))
+                    + '</a>';
+                sug.html(html).removeClass('d-none');
+                activeIndex = -1;
+            }
+
+            function renderStatus(text, query, showAll) {
+                var sug = $('#search-suggestions');
+                var html = '<div class="s-status">' + esc(text) + '</div>';
+                if (showAll && query) {
+                    html += '<a href="/search?q=' + encodeURIComponent(query) + '" class="s-all">'
+                        + '{{ __('store.home.search_view_all', ['query' => ':query']) }}'.replace(':query', esc(query))
+                        + '</a>';
+                }
+                sug.html(html).removeClass('d-none');
+                activeIndex = -1;
+            }
+
+            function hide() {
+                $('#search-suggestions').addClass('d-none').html('');
+                activeIndex = -1;
+            }
+
+            function setActive(idx) {
+                var rows = $('#search-suggestions .s-item');
+                if (!rows.length) return null;
+                rows.removeClass('active');
+                activeIndex = (idx + rows.length) % rows.length;
+                var row = rows.eq(activeIndex).addClass('active');
+                row[0].scrollIntoView({ block: 'nearest' });
+                return row;
+            }
+
+            $(document).ready(function () {
+                var input = $('#search-input');
+
+                input.on('input keyup', function (e) {
+                    if (e.type === 'keyup' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                        e.preventDefault();
+                        setActive(e.key === 'ArrowDown' ? activeIndex + 1 : activeIndex - 1);
+                        return;
+                    }
+                    if (e.type === 'keyup' && e.key === 'Escape') {
+                        hide();
+                        return;
+                    }
+                    if (e.type === 'keyup' && e.key === 'Enter') {
+                        var active = $('#search-suggestions .s-item.active');
+                        if (active.length) { window.location = active.attr('href'); return; }
+                        return; /* form default submits to /search */
+                    }
+                    if (e.type === 'keyup' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Tab' || e.key === 'Shift')) return;
+
+                    var query = $.trim(input.val());
+                    clearTimeout(timer);
+                    if (query.length < MIN_CHARS) { hide(); return; }
+
+                    timer = setTimeout(function () {
+                        if (currentXHR) currentXHR.abort();
+                        renderStatus('Searching…', query, true);
+                        currentXHR = $.ajax({
+                            url: '/search-suggestions',
+                            type: 'GET',
+                            data: { q: query },
+                            success: function (data) {
+                                currentXHR = null;
+                                var latest = $.trim(input.val());
+                                if (latest.length < MIN_CHARS) { hide(); return; }
+                                if (data && data.length) { renderRows(data, latest); }
+                                else { renderStatus('No results for “' + esc(latest) + '”', latest, true); }
+                            },
+                            error: function (xhr) {
+                                currentXHR = null;
+                                if (xhr && xhr.statusText === 'abort') return;
+                                hide();
                             }
-                        }
-                    });
-                } else {
-                    $('#search-suggestions').addClass('d-none');
-                }
+                        });
+                    }, DEBOUNCE_MS);
+                });
+
+                $(document).on('click', function (event) {
+                    if (!$(event.target).closest('#search-input, #search-suggestions').length) {
+                        hide();
+                    }
+                });
             });
-
-            $(document).on('click', function (event) {
-                if (!$(event.target).closest('#search-input, #search-suggestions').length) {
-                    $('#search-suggestions').addClass('d-none');
-                }
-            });
-        });
-
-
+        })();
     </script>
     <script>
         /* Image reveal: fade images in as they finish loading (product cards,

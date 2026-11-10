@@ -401,15 +401,20 @@ a:hover { color: var(--ap-link); }
 /* Promo ribbon under the nav */
 .apple-promo {
     background: var(--ap-canvas-alt);
-    padding: 11px 16px;
+    padding: 10px 16px;
     text-align: center;
+    line-height: 1.45;
+    overflow: visible;
 }
 .apple-promo p {
     margin: 0;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.45;
     color: var(--ap-ink);
     letter-spacing: -0.016em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ==========================================================================
@@ -1433,7 +1438,7 @@ footer .bg-black span { color: var(--ap-tertiary); font-size: 12px; }
 }
 .pdp-gallery-thumb.slick-current { opacity: 1; }
 .pdp-gallery-thumb img {
-    width: 100%; height: 84px; object-fit: cover;
+    width: 100%; height: 84px; object-fit: contain;
     border-radius: 14px; border: 1px solid rgba(0, 0, 0, 0.07); background: #fff;
 }
 .pdp-gallery-thumb.slick-current img { border-color: #0071e3; }
@@ -1457,9 +1462,11 @@ footer .bg-black span { color: var(--ap-tertiary); font-size: 12px; }
    19. PDP BUY BOX — Apple-grade alignment (stock, stars, heart, qty, CTA)
    ========================================================================== */
 
-/* Stock status: icon + word, perfectly centered, no pill (Apple buy page) */
+/* Stock status: icon + word, perfectly centered, no pill (Apple buy page).
+   Block-level so the star row starts BELOW the badge, not beside it. */
 .product-stock {
-    display: inline-flex;
+    display: flex;
+    width: 100%;
     align-items: center;
     gap: 6px;
     font-size: 14px;
@@ -1490,8 +1497,8 @@ footer .bg-black span { color: var(--ap-tertiary); font-size: 12px; }
 /* Wishlist heart: real 40px touch target, optically centered */
 .wish-heart {
     flex: 0 0 auto;
-    align-self: flex-start;
-    margin-top: 2px;
+    align-self: center;
+    margin-top: 0;
     width: 40px;
     height: 40px;
     display: inline-flex;
@@ -1802,3 +1809,165 @@ input[type="radio"]:checked + .color-circle {
 }
 .pdp-gallery-thumb.slick-current { opacity: 1; }
 .pdp-gallery-thumb.slick-current img { border-color: var(--ap-blue); }
+
+/* ==========================================================================
+   15. INSTANT SEARCH DROPDOWN (Apple-grade type-ahead)
+   ========================================================================== */
+.apple-searchsuggestions .s-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--ap-ink);
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+.apple-searchsuggestions .s-item:hover,
+.apple-searchsuggestions .s-item.active {
+    background: var(--ap-canvas-alt);
+    color: var(--ap-ink);
+}
+.apple-searchsuggestions .s-thumb {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--ap-canvas-soft);
+}
+.apple-searchsuggestions .s-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.apple-searchsuggestions .s-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+.apple-searchsuggestions .s-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: -0.014em;
+}
+.apple-searchsuggestions .s-name mark {
+    background: none;
+    color: var(--ap-link);
+    font-weight: 600;
+}
+.apple-searchsuggestions .s-price {
+    flex: 0 0 auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ap-ink);
+    letter-spacing: -0.014em;
+}
+.apple-searchsuggestions .s-price .s-original {
+    color: var(--ap-tertiary);
+    font-weight: 400;
+    margin-right: 6px;
+}
+.apple-searchsuggestions .s-all {
+    display: block;
+    padding: 9px 10px 6px;
+    margin-top: 4px;
+    border-top: 1px solid var(--ap-hairline-soft);
+    font-size: 13px;
+    color: var(--ap-link);
+    text-decoration: none;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+.apple-searchsuggestions .s-all:hover { text-decoration: underline; }
+.apple-searchsuggestions .s-status {
+    padding: 12px 10px;
+    font-size: 13px;
+    color: var(--ap-tertiary);
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   16. LANDING POLISH — category tiles, promo lineup, stock badge, search page
+   ========================================================================== */
+
+/* Category tiles: drop the legacy 2px black border + jumpy 1.3 zoom */
+.category-slider .cat-card .catcard-img {
+    border: 0;
+    box-shadow: none;
+}
+.category-slider .cat-card .catcard-img:hover {
+    box-shadow: var(--ap-shadow-hover);
+}
+.cat-card .catcard-img img,
+.category-slider .cat-card .catcard-img img {
+    transition: transform 0.5s var(--ap-ease);
+}
+.cat-card .catcard-img:hover img,
+.category-slider .cat-card .catcard-img:hover img {
+    transform: scale(1.04);
+}
+
+/* Promo lineup banner: constrained, centered, rounded — not edge-to-edge */
+.sale-banner {
+    padding: 8px 0 32px;
+}
+.sale-banner img {
+    display: block;
+    margin: 0 auto;
+    max-width: 980px;
+    width: 100%;
+    border-radius: var(--ap-radius-tile);
+}
+
+/* PDP: breathing room between the stock badge and the star row */
+.product-stock {
+    margin-bottom: 10px;
+}
+
+/* Search results page */
+.search-page-head .sec-heading { margin-bottom: 4px; }
+.search-page-count {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--ap-tertiary);
+    letter-spacing: -0.01em;
+}
+.search-empty {
+    text-align: center;
+    padding: 72px 16px;
+    color: var(--ap-tertiary);
+}
+.search-empty i {
+    font-size: 34px;
+    color: var(--ap-tertiary);
+    opacity: 0.6;
+    margin-bottom: 14px;
+    display: block;
+}
+.search-empty h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ap-ink);
+    letter-spacing: -0.016em;
+    margin-bottom: 6px;
+}
+.search-empty p {
+    font-size: 15px;
+    margin-bottom: 22px;
+}
+.search-pagination .pagination { justify-content: center; }
+
+/* Footer logo: small and balanced next to the link columns */
+.footer-logo {
+    max-width: 28px;
+    display: inline-block;
+    vertical-align: top;
+}

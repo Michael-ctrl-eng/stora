@@ -3,7 +3,9 @@
     <div class="row">
       <!-- Column 1: Logo -->
       <div class="col-12 col-md-3 mb-4">
-        <img src="{{ asset('images/logo.png') }}" alt="{{ __('store.footer.footer_logo_alt') }}" class="img-fluid" style="max-width: 100px;">
+        <a href="{{ route('xylo.home') }}" class="d-inline-block" aria-label="Stora">
+          <img src="{{ asset('images/logo.png') }}" alt="{{ __('store.footer.footer_logo_alt') }}" class="img-fluid footer-logo">
+        </a>
       </div>
 
       <!-- Column 2: Account -->
